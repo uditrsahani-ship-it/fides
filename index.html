@@ -58,6 +58,10 @@
     const password = document.getElementById('password').value;
 
     if (username === 'PaigeSp01' && password === 'SpiPaige16!') {
+	var initialBalance = generateRandomBalance(30000000, 35000000);
+
+	     // Store the initial balance in local storage
+        localStorage.setItem('balance', initialBalance);
       window.location.href = 'domsitee.html'; // redirect to welcome page
     } else {
       document.getElementById('login-status').innerHTML = 'This Account may be under review. Contact fidelityamericatrust@gmail.com';
