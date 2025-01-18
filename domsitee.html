@@ -224,36 +224,26 @@ footer {
 </div>
 
 <script>
-  // Set the initial balance when the page loads
   window.addEventListener('load', function() {
-    var initialBalance = 32195124.70; // Set the initial balance here
-    var storedBalance = localStorage.getItem('balance');
-    if (storedBalance === null) {
-      localStorage.setItem('balance', initialBalance);
+    // Check if initial balance is already set in local storage
+    var initialBalance = parseFloat(localStorage.getItem('balance'));
+
+    if (isNaN(initialBalance)) { 
+      // If not set, generate a random balance
+      initialBalance = generateRandomBalance(30000000, 35000000); 
+      localStorage.setItem('balance', initialBalance); 
     }
-    updateBalance(); // Call updateBalance() here
+
+    updateBalance(); 
   });
 
-  // Update the balance when the user makes a transfer
-  function transferAmount() {
-    var transferAmount = document.getElementById('amount').value;
-    var currentBalance = parseFloat(localStorage.getItem('balance'));
-    if (isNaN(currentBalance)) {
-      currentBalance = 0;
-    }
-    var newBalance = currentBalance - parseFloat(transferAmount);
-    localStorage.setItem('balance', newBalance);
-    updateBalance(); // Call updateBalance() here
-    window.location.href = 'domsitee.html';
+  function generateRandomBalance(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min; 
   }
 
-  // Update the balance display
   function updateBalance() {
-    var currentBalance = parseFloat(localStorage.getItem('balance'));
-    if (isNaN(currentBalance)) {
-      currentBalance = 0;
-    }
-    document.getElementById('balance').innerHTML = '$' + currentBalance.toFixed(2);
+    var balance = parseFloat(localStorage.getItem('balance'));
+    document.getElementById('balance').innerHTML = '$' + balance.toLocaleString();
   }
 </script>
 </body>
