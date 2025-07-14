@@ -233,25 +233,29 @@ footer {
 </div>
 
 <script>
-  window.addEventListener('load', function() {
-    // Check if initial balance is already set in local storage
+  window.addEventListener('load', function () {
     var initialBalance = parseFloat(localStorage.getItem('balance'));
 
-    if (isNaN(initialBalance)) { 
-      // If not set, generate a random balance
-      initialBalance = generateRandomBalance(510000, 550000); 
-      localStorage.setItem('balance', initialBalance); 
+    if (isNaN(initialBalance)) {
+      // If not set, generate a random balance and save
+      initialBalance = generateRandomBalance(510000, 550000);
+      localStorage.setItem('balance', initialBalance);
     }
 
-    updateBalance(); 
+    // Wait 2.5 seconds before updating the balance
+    setTimeout(updateBalance, 2500);
   });
 
   function generateRandomBalance(min, max) {
-  return parseFloat((Math.random() * (max - min) + min).toFixed(2));
-}
+    return parseFloat((Math.random() * (max - min) + min).toFixed(2));
+  }
+
   function updateBalance() {
     var balance = parseFloat(localStorage.getItem('balance'));
-    document.getElementById('balance').innerHTML = '$' + balance.toLocaleString();
+    var display = document.getElementById('balance');
+    if (display) {
+      display.innerHTML = '$' + balance.toLocaleString();
+    }
   }
 </script>
 </body>
