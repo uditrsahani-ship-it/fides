@@ -1,118 +1,107 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>FIDELITY AMERICA TRUST BANK</title>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<style>
-html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
-/* Add some styles to make the chat window look nice */
-@media only screen and (max-width: 600px) {
-  /* Styles for screens smaller than 600px */
-  .w3-container {
-    width: 90%;
-  }
-  #chat-log {
-    height: 200px;
-  }
-}
-.w3-container {
-    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-    background-color: #fff; /* White background */
-    padding: 16px;
-    border-radius: 10px;
-  }
-  
-  .w3-container.w3-green.w3-padding-50:hover {
-  background-color: #000; /* Black color */
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FIDELITY AMERICA TRUST BANK</title>
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+    html, body, h1, h2, h3, h4, h5 {
+      font-family: "Raleway", sans-serif;
+    }
 
-  
-  /* Add green theme to the page */
-  body {
-    background-color: #fff; /* White background */
-  }
-  
-  .w3-bar {
-    background-color: #ffffff; /* Green background */
-  }
-  
-  .w3-button {
-    background-color: #4CAF50; /* Green background */
-    color: #fff; /* White text */
-  }
-  
-  .w3-green {
-    background-color: #4CAF50; /* Green background */
-  }
-  
-  .w3-border-green {
-    border-color: #4CAF50; /* Green border */
-  }
-  
-  .w3-text-green {
-    color: #4CAF50; /* Green text */
-  }
-  .live-chat-minimized {
-    height: 40px;
-  overflow: hidden;
-  min-height: 200px;
-  transition: height 0.5s; /* Add this line */
+    body {
+      background-color: #f1f1f1;
+      margin: 0;
+    }
 
-footer {
-  position: sticky;
-  bottom: 0;
-  width: 100%;
-}
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #000;
+      padding: 10px 20px;
+      color: #fff;
+    }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-}
+    .top-bar img {
+      height: 60px;
+    }
 
-.row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-}
+    .top-bar h1 {
+      margin: 0;
+      font-size: 22px;
+      text-align: center;
+      flex: 1;
+    }
 
-.col-md-12 {
-  flex-basis: 100%;
-  max-width: 100%;
-}
+    .transfer-card {
+      max-width: 500px;
+      margin: 40px auto;
+      background-color: #fff;
+      padding: 24px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
 
-@media (min-width: 768px) {
-  .col-md-12 {
-    flex-basis: 50%;
-    max-width: 50%;
-  }
-}
+    .w3-input {
+      margin-top: 8px;
+    }
 
-@media (min-width: 1200px) {
-  .col-md-12 {
-    flex-basis: 33.33%;
-    max-width: 33.33%;
-  }
-}
-</style>
+    .toast {
+      visibility: hidden;
+      min-width: 250px;
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      border-radius: 4px;
+      padding: 16px;
+      position: fixed;
+      z-index: 10;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0;
+      transition: opacity 0.5s ease-in-out, bottom 0.5s ease-in-out;
+    }
+
+    .toast.show {
+      visibility: visible;
+      opacity: 1;
+      bottom: 50px;
+    }
+
+    .confirmation {
+      display: none;
+      text-align: center;
+      padding: 40px;
+    }
+
+    .confirmation i {
+      font-size: 60px;
+      color: #4CAF50;
+      animation: pop 0.6s ease-out;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0); opacity: 0; }
+      60% { transform: scale(1.1); opacity: 1; }
+      100% { transform: scale(1); }
+    }
+  </style>
 </head>
-<body class="w3-light-grey">
-	<!-- Top container -->
-	<div class="w3-bar w3-striped w3-black w3-small" style="z-index: 8;">
-		<span class="w3-bar-item w3-animate-left">
-			<a href="domsitee.html">
-				<img src="fatlogo.png" style="height: 82px; margin-top: 0px;">
-			</a>
-		</span>
-		<div class="w3-center" style="margin-top:1px;">
-			<h1>Transfer</h1>
-		</div>
-	</div>
-	<div class="w3-card w3-padding-8 w3-center w3-animate-opacity" style="width: 50%; margin: 0 auto;">
+<body>
+
+  <div class="top-bar">
+    <a href="domsitee.html">
+      <img src="fatlogo.png" alt="Logo">
+    </a>
+    <h1>Transfer</h1>
+  </div>
+
+  <div class="transfer-card w3-animate-opacity">
     <form id="transferForm">
       <div class="w3-section">
         <label>Account Number</label>
@@ -128,68 +117,67 @@ footer {
       </div>
       <div class="w3-section">
         <label>Amount to Send</label>
-        <input type="text" id="amount" name="amount" class="w3-input w3-border" required>
+        <input type="number" id="amount" name="amount" class="w3-input w3-border" required>
       </div>
-      <button id="transferBtn" class="w3-button w3-block w3-green w3-section" style="width:100%">Transfer</button>
+      <button id="transferBtn" class="w3-button w3-block w3-green w3-section">Transfer</button>
     </form>
+
+    <div class="confirmation" id="confirmation">
+      <i class="fa fa-check-circle"></i>
+      <h3>Transfer Successful!</h3>
+    </div>
   </div>
-  
-	<!-- Footer -->
-	<footer class="w3-container w3-padding-16 w3-light-grey">
-		<p>Powered by <a href="(link unavailable)" target="_blank">LiisH</a></p>
-	</footer>
-	<!-- End page content -->
-</div>
-<script>
-  // Get the transfer button
-  var transferBtn = document.getElementById("transferBtn");
 
-  // Set the account number to transfer to
-  var accountNumberToTransferTo = "3142800903";
+  <div id="toast" class="toast">Transfer Completed</div>
 
-  // Add an event listener to the transfer button
-  transferBtn.addEventListener("click", function() {
-    // Get the account number entered by the user
-    var accountNumberEntered = document.getElementById("accountNumber").value;
+  <footer class="w3-container w3-padding-16 w3-light-grey w3-center">
+    <p>Powered by <a href="#">LiisH</a></p>
+  </footer>
 
-    // Check if the account number entered matches the account number to transfer to
-    if (accountNumberEntered === accountNumberToTransferTo) {
-      // Ask for confirmation
-      if (confirm("Are you sure you want to send the amount?")) {
-        // User clicked "Proceed"
-        transferAmount(); // Call transferAmount() here
-        alert("Transfer successful!");
-        localStorage.setItem('transferMade', 'true');
-        window.location.href='domsitee.html';
+  <script>
+    const transferBtn = document.getElementById("transferBtn");
+    const toast = document.getElementById("toast");
+    const confirmation = document.getElementById("confirmation");
+
+    const accountNumberToTransferTo = "3142800903";
+
+    transferBtn.addEventListener("click", function(event) {
+      event.preventDefault();
+      const enteredAccount = document.getElementById("accountNumber").value;
+
+      if (enteredAccount === accountNumberToTransferTo) {
+        if (confirm("Are you sure you want to send the amount?")) {
+          transferAmount();
+        } else {
+          alert("Transfer cancelled!");
+        }
       } else {
-        // User clicked "Cancel"
-        alert("Transfer cancelled!");
+        alert("Transaction blocked! Contact fidelityamericatrust@gmail.com for assistance.");
       }
-    } else {
-      // Display an error message if the transaction is blocked
-      alert("Transaction blocked! Please contact us at fidelityamericatrust@gmail.com for further assistance.");nk
+    });
+
+    function transferAmount() {
+      const amount = parseFloat(document.getElementById("amount").value);
+      let balance = parseFloat(localStorage.getItem("balance")) || 0;
+      const newBalance = balance - amount;
+      localStorage.setItem("balance", newBalance);
+      localStorage.setItem("transferMade", "true");
+
+      document.getElementById("transferForm").style.display = "none";
+      confirmation.style.display = "block";
+
+      showToast();
+
+      setTimeout(() => {
+        window.location.href = "domsitee.html";
+      }, 3000);
     }
-  });
 
-  function transferAmount() {
-  var transferAmount = document.getElementById('amount').value;
-  var currentBalance = parseFloat(localStorage.getItem('balance'));
-  if (isNaN(currentBalance)) {
-    currentBalance = 0;
-  }
-  var newBalance = currentBalance - parseFloat(transferAmount);
-  console.log("New Balance: " + newBalance);
-  localStorage.setItem('balance', newBalance);
-  window.location.href = 'domsitee.html';
-}
+    function showToast() {
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2500);
+    }
+  </script>
 
-  // Get the form element
-  var form = document.getElementById('transferForm');
-
-  // Add an event listener to the form submission
-  form.addEventListener('submit', function(event) {
-    event.preventDefault(); // Prevent the default form submission behavior
-  });
-</script>
 </body>
 </html>
