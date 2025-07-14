@@ -118,7 +118,7 @@ footer {
 <div class="w3-bar w3-striped w3-black w3-small" style="z-index: 8;">
   <span class="w3-bar-item w3-animate-left">
   <a href="domsitee.html">  
-    <img src="fatlogo.png" style="height: 82px; margin-top: 0px;">
+  <img src="fatlogo.png" alt="Fidelity America Trust Logo" style="height: 82px; margin-top: 0px;">
   </a>
 </span>
   <h1 style="display: flex; justify-content: center;">Fidelity America Trust</h1>
@@ -137,13 +137,21 @@ footer {
 
 <nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
   <div class="w3-container-fluid w3-row">
-    <div class="w3-col s8 w3-bar">
-      <span>Welcome, <strong>Flores, Tarik</strong></span><br>
-      <div class="w3-col s4">
-      <img src="Flores.jpg" alt="Profile Picture" style="width:100%;height: 80px;border-radius:100%;margin-top:20px;">
-      </div>
+
+    <!-- Profile Image Column -->
+    <div class="w3-col s4 w3-center">
+      <img src="Flores.jpg" alt="Profile Picture" style="width:80px; height: 80px; border-radius:50%; margin-top:10px;">
     </div>
-    <div id="date-time"></div>
+
+    <!-- Welcome Text Column -->
+    <div class="w3-col s8 w3-bar">
+      <span>Welcome,<br><strong>Flores, Tarik</strong></span>
+    </div>
+
+  </div>
+
+  <!-- Date/Time -->
+  <div id="date-time" class="w3-container w3-padding-small w3-small w3-text-grey"></div>
   <script>
     setInterval(function() {
       var currentDateTime = new Date();
@@ -151,15 +159,17 @@ footer {
       document.getElementById("date-time").innerHTML = formattedDateTime;
     }, 1000);
   </script>
-</div>
-  </div>
-  
+
   <hr>
+
+  <!-- Services List -->
   <div class="w3-container-fluid">
     <h5>Services</h5>
   </div>
   <div class="w3-bar-block">
-    <a href="#" class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black" onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i>  Close Menu</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black" onclick="w3_close()" title="close menu">
+      <i class="fa fa-remove fa-fw"></i>  Close Menu
+    </a>
     <a href="#" class="w3-bar-item w3-button w3-padding w3-blue"><i class="fa fa-users fa-fw"></i>  Overview</a>
     <a href="send.html" class="w3-bar-item w3-button w3-padding"><i class="fa fa-money fa-fw"></i>  Send Money</a>
     <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-laptop fa-fw"></i>  Pay bills</a>
@@ -169,6 +179,7 @@ footer {
     <a href="profile.html" class="w3-bar-item w3-button w3-padding"><i class="fa fa-user fa-fw"></i>  Profile</a><br><br>
   </div>
 </nav>
+
 
 
 <!-- Overlay effect when opening sidebar on small screens -->
@@ -236,9 +247,8 @@ footer {
   });
 
   function generateRandomBalance(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min; 
-  }
-
+  return parseFloat((Math.random() * (max - min) + min).toFixed(2));
+}
   function updateBalance() {
     var balance = parseFloat(localStorage.getItem('balance'));
     document.getElementById('balance').innerHTML = '$' + balance.toLocaleString();
