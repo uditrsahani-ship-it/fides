@@ -14,6 +14,7 @@
 
     body {
       background-color: #f1f1f1;
+      margin: 0;
     }
 
     .w3-sidebar {
@@ -27,22 +28,34 @@
     }
 
     .top-bar {
-      padding: 0 16px;
+      padding: 0 24px;
+      height: 80px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       background-color: #000;
       color: #fff;
+      margin-left: 300px; /* Reserve space for sidebar */
+      position: sticky;
+      top: 0;
+      z-index: 4;
+    }
+
+    .top-bar img {
+      height: 50px;
     }
 
     .top-bar h1 {
-      font-size: 22px;
+      font-size: 20px;
+      flex: 1;
+      text-align: center;
       margin: 0;
     }
 
     .main-content {
       margin-left: 300px;
       padding: 24px;
+      margin-top: 80px; /* Avoid overlap with top bar */
     }
 
     .balance-card {
@@ -53,39 +66,58 @@
       background-color: #000 !important;
     }
 
-    .profile-section img {
-      border-radius: 50%;
+    .profile-section {
       width: 60px;
       height: 60px;
       margin-top: 10px;
       object-fit: cover;
+      border-radius: 50%;
     }
 
     .footer {
       text-align: center;
       padding: 16px;
       background: #e0e0e0;
+      margin-left: 300px;
+    }
+
+    .w3-button {
+      transition: background-color 0.3s ease;
+    }
+
+    .w3-button:hover {
+      background-color: #333 !important;
+    }
+
+    @media (max-width: 768px) {
+      .w3-sidebar {
+        position: static;
+        width: 100%;
+        height: auto;
+      }
+      .top-bar, .main-content, .footer {
+        margin-left: 0;
+      }
     }
   </style>
 </head>
 <body class="w3-light-grey">
 
-  <div class="top-bar w3-bar w3-black">
-    <a href="domsitee.html" class="w3-bar-item">
-      <img src="fatlogo.png" alt="Fidelity America Trust Logo" style="height: 60px;">
+  <div class="top-bar">
+    <a href="domsitee.html">
+      <img src="fatlogo.png" alt="Fidelity America Trust Logo">
     </a>
-    <h1 class="w3-bar-item">Fidelity America Trust</h1>
-    <button class="w3-button w3-small w3-black w3-bar-item" onclick="logout()">
+    <h1>Fidelity America Trust</h1>
+    <button class="w3-button w3-small w3-black" onclick="logout()">
       <i class="fa fa-sign-out"></i> Logout
     </button>
   </div>
 
   <nav class="w3-sidebar w3-white w3-collapse w3-animate-left" id="mySidebar">
     <div class="w3-container w3-row w3-padding">
-      <!-- Profile Image Column -->
-    <div class="w3-col s4 w3-center">
-      <img src="Flores.jpg" alt="Profile Picture" style="width:80px; height: 80px; border-radius:50%; margin-top:10px;">
-    </div>
+      <div class="w3-col s4 w3-center">
+        <img src="Flores.jpg" alt="Profile Picture" class="profile-section">
+      </div>
       <div class="w3-col s8">
         <span>Welcome,<br><strong>Flores, Tarik</strong></span>
       </div>
