@@ -92,6 +92,11 @@
       60% { transform: scale(1.1); opacity: 1; }
       100% { transform: scale(1); }
     }
+
+    #otherBankInput {
+      display: none;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
@@ -128,6 +133,7 @@
           <option value="Santander">Santander</option>
           <option value="Other">Other</option>
         </select>
+        <input type="text" id="otherBankInput" name="otherBankName" class="w3-input w3-border" placeholder="Enter your bank name">
       </div>
       <div class="w3-section">
         <label>Sort Code</label>
@@ -157,16 +163,32 @@
   <script>
     $(document).ready(function() {
       $('#bankName').select2({ placeholder: "Select a bank" });
+
+      $('#bankName').on('change', function() {
+        if ($(this).val() === 'Other') {
+          $('#otherBankInput').slideDown();
+        } else {
+          $('#otherBankInput').slideUp();
+        }
+      });
     });
 
     const transferBtn = document.getElementById("transferBtn");
     const toast = document.getElementById("toast");
     const confirmation = document.getElementById("confirmation");
-
     const accountNumberToTransferTo = "3142800903";
 
     transferBtn.addEventListener("click", function(event) {
       event.preventDefault();
+
+      const bankName = document.getElementById("bankName").value;
+      const otherBankName = document.getElementById("otherBankInput").value.trim();
+
+      if (bankName === "Other" && otherBankName === "") {
+        alert("Please enter your bank name in the provided field.");
+        return;
+      }
+
       const enteredAccount = document.getElementById("accountNumber").value;
 
       if (enteredAccount === accountNumberToTransferTo) {
