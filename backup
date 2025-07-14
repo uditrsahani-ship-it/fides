@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Fidelity America Trust</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
+/* Add some styles to make the chat window look nice */
+@media only screen and (max-width: 600px) {
+  /* Styles for screens smaller than 600px */
+  .w3-container {
+    width: 90%;
+  }
+  #chat-log {
+    height: 200px;
+  }
+}
+.w3-container {
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    background-color: #fff; /* White background */
+    padding: 16px;
+    border-radius: 10px;
+  }
+  
+  .w3-container.w3-green.w3-padding-50:hover {
+  background-color: #000; /* Black color */
+}
+
+  
+  /* Add green theme to the page */
+  body {
+    background-color: #fff; /* White background */
+  }
+  
+  .w3-bar {
+    background-color: #ffffff; /* Green background */
+  }
+  
+  .w3-button {
+    background-color: #4CAF50; /* Green background */
+    color: #fff; /* White text */
+  }
+  
+  .w3-green {
+    background-color: #4CAF50; /* Green background */
+  }
+  
+  .w3-border-green {
+    border-color: #4CAF50; /* Green border */
+  }
+  
+  .w3-text-green {
+    color: #4CAF50; /* Green text */
+  }
+  .live-chat-minimized {
+    height: 40px;
+  overflow: hidden;
+  min-height: 200px;
+  transition: height 0.5s; /* Add this line */
+
+footer {
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.col-md-12 {
+  flex-basis: 100%;
+  max-width: 100%;
+}
+
+@media (min-width: 768px) {
+  .col-md-12 {
+    flex-basis: 50%;
+    max-width: 50%;
+  }
+}
+
+@media (min-width: 1200px) {
+  .col-md-12 {
+    flex-basis: 33.33%;
+    max-width: 33.33%;
+  }
+}
+.balance-text {
+  font-size: 50px; /* or any size you prefer */
+  font-weight: bold; /* optional, to make it bold */
+}
+    function logout() {
+  // Clear local storage
+  localStorage.clear();
+  
+  // Redirect to login page
+  window.location.href = 'index.html';
+}
+  #mySidebar {
+  position: relative;
+  height: auto;
+}
+</style>
+</head>
+<body class="w3-light-grey">
+
+<!-- Top container -->
+<div class="w3-container-fluid">
+<div class="w3-bar w3-striped w3-black w3-small" style="z-index: 8;">
+  <span class="w3-bar-item w3-animate-left">
+  <a href="domsitee.html">  
+  <img src="fatlogo.png" alt="Fidelity America Trust Logo" style="height: 82px; margin-top: 0px;">
+  </a>
+</span>
+  <h1 style="display: flex; justify-content: center;">Fidelity America Trust</h1>
+  <span class="w3-bar-item w3-right">
+  <a href="index.html">
+    <button class="w3-button w3-small w3-black" onclick="logout()">
+  <i class="fa fa-sign-out"></i> Logout
+    </button>
+  </a>
+</span>
+</div>
+<!-- Sidebar/menu -->
+  </div>
+  
+</div>
+
+<nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
+  <div class="w3-container-fluid w3-row">
+
+    <!-- Profile Image Column -->
+    <div class="w3-col s4 w3-center">
+      <img src="Flores.jpg" alt="Profile Picture" style="width:80px; height: 80px; border-radius:50%; margin-top:10px;">
+    </div>
+
+    <!-- Welcome Text Column -->
+    <div class="w3-col s8 w3-bar">
+      <span>Welcome,<br><strong>Flores, Tarik</strong></span>
+    </div>
+
+  </div>
+
+  <!-- Date/Time -->
+  <div id="date-time" class="w3-container w3-padding-small w3-small w3-text-grey"></div>
+  <script>
+    setInterval(function() {
+      var currentDateTime = new Date();
+      var formattedDateTime = currentDateTime.toLocaleString();
+      document.getElementById("date-time").innerHTML = formattedDateTime;
+    }, 1000);
+  </script>
+
+  <hr>
+
+  <!-- Services List -->
+  <div class="w3-container-fluid">
+    <h5>Services</h5>
+  </div>
+  <div class="w3-bar-block">
+    <a href="#" class="w3-bar-item w3-button w3-padding-16 w3-hide-large w3-dark-grey w3-hover-black" onclick="w3_close()" title="close menu">
+      <i class="fa fa-remove fa-fw"></i>  Close Menu
+    </a>
+    <a href="#" class="w3-bar-item w3-button w3-padding w3-blue"><i class="fa fa-users fa-fw"></i>  Overview</a>
+    <a href="send.html" class="w3-bar-item w3-button w3-padding"><i class="fa fa-money fa-fw"></i>  Send Money</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-laptop fa-fw"></i>  Pay bills</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-credit-card fa-fw"></i>  Request Credit Card</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding" onclick="location.href='mailto:fidelityamericatrust@gmail.com'"><i class="fa fa-balance-scale fa-fw"></i> Dispute Resolution</a>
+    <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-history fa-fw"></i>  History</a>
+    <a href="profile.html" class="w3-bar-item w3-button w3-padding"><i class="fa fa-user fa-fw"></i>  Profile</a><br><br>
+  </div>
+</nav>
+
+
+
+<!-- Overlay effect when opening sidebar on small screens -->
+<div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
+
+<!-- !PAGE CONTENT! -->
+<div class="w3-main" style="margin-left:300px;margin-top:43px;">
+
+  <!-- Header -->
+  <header class="w3-container-fluid" style="padding-top:22px">
+    <h5><b><i class="fa fa-dashboard"></i> My Dashboard</b></h5>
+  </header>
+
+  <div class="w3-row-padding w3-margin-bottom"> 
+    <div class="w3-full"> 
+      <div class="w3-container w3-green w3-padding-50" style="transition: background-color 0.5s;"> 
+        <div class="w3-left"><i class="fa fa-money w3-xxxlarge"></i></div> 
+        <div class="w3-clear w3-animate-opacity w3-center"> 
+          <h4>Available Balance</h4> 
+          <span id="balance" style="font-size: 36px; font-weight: bold;">Loading...</span>
+        </div> 
+      </div> 
+    </div> 
+  </div class="w3-container-fluid">
+      <button class="w3-button w3-large w3-black w3-margin-bottom" onclick="location.href='send.html'"><i class="fa fa-money" style="margin-right: 10px;"> Transfers </i></button>
+        <button class="w3-button w3-large w3-black w3-margin-bottom" onclick="location.href='https://www.kayak.com/flights'"><i class="fa fa-plane" style="margin-right: 10px;"></i> Book a Flight </button>
+      <button class="w3-button w3-large w3-black w3-margin-bottom" onclick="location.href='https://www.booking.com/'"><i class="fa fa-hotel">   Hotel Reservation </i></button>
+      <button class="w3-button w3-large w3-black w3-margin-bottom" onclick="location.href='https://bitcoin.org/en/'"><i class="fa fa-bitcoin">  Buy Bitcoin </i></button>
+    </div>
+    <div class="w3-quarter">
+    </div>
+  </div>
+
+  
+  
+
+  </div>
+ 
+</div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="w3-container-fluid w3-padding-16 w3-light-grey">
+
+    <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">LiisH</a></p>
+    
+  </footer>
+
+  <!-- End page content -->
+</div>
+
+<script>
+  window.addEventListener('load', function () {
+    var initialBalance = parseFloat(localStorage.getItem('balance'));
+
+    if (isNaN(initialBalance)) {
+      // If not set, generate a random balance and save
+      initialBalance = generateRandomBalance(510000, 550000);
+      localStorage.setItem('balance', initialBalance);
+    }
+
+    // Wait 2.5 seconds before updating the balance
+    setTimeout(updateBalance, 2500);
+  });
+
+  function generateRandomBalance(min, max) {
+    return parseFloat((Math.random() * (max - min) + min).toFixed(2));
+  }
+
+  function updateBalance() {
+    var balance = parseFloat(localStorage.getItem('balance'));
+    var display = document.getElementById('balance');
+    if (display) {
+      display.innerHTML = '$' + balance.toLocaleString();
+    }
+  }
+</script>
+</body>
+</html>
