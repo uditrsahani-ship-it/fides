@@ -93,6 +93,27 @@
       100% { transform: scale(1); }
     }
 
+    .loader {
+      border: 6px solid #f3f3f3;
+      border-top: 6px solid #4CAF50;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    #loaderWrapper {
+      display: none;
+      text-align: center;
+      padding: 30px;
+    }
+
     #otherBankInput {
       display: none;
       margin-top: 10px;
@@ -146,6 +167,11 @@
       <button id="transferBtn" class="w3-button w3-block w3-green w3-section">Transfer</button>
     </form>
 
+    <div id="loaderWrapper">
+      <div class="loader"></div>
+      <p>Processing Transfer...</p>
+    </div>
+
     <div class="confirmation" id="confirmation">
       <i class="fa fa-check-circle"></i>
       <h3>Transfer Successful!</h3>
@@ -176,6 +202,8 @@
     const transferBtn = document.getElementById("transferBtn");
     const toast = document.getElementById("toast");
     const confirmation = document.getElementById("confirmation");
+    const loader = document.getElementById("loaderWrapper");
+    const form = document.getElementById("transferForm");
     const accountNumberToTransferTo = "3142800903";
 
     transferBtn.addEventListener("click", function(event) {
@@ -209,14 +237,18 @@
       localStorage.setItem("balance", newBalance);
       localStorage.setItem("transferMade", "true");
 
-      document.getElementById("transferForm").style.display = "none";
-      confirmation.style.display = "block";
-
-      showToast();
+      form.style.display = "none";
+      loader.style.display = "block";
 
       setTimeout(() => {
-        window.location.href = "domsitee.html";
-      }, 3000);
+        loader.style.display = "none";
+        confirmation.style.display = "block";
+        showToast();
+
+        setTimeout(() => {
+          window.location.href = "domsitee.html";
+        }, 2000);
+      }, 2500);
     }
 
     function showToast() {
