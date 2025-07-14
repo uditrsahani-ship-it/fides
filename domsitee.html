@@ -195,6 +195,31 @@
         document.getElementById('balance').textContent = '$' + balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       }, 2500);
     });
+    // Timeout duration in milliseconds (5 minutes)
+  const TIMEOUT_DURATION = 5 * 60 * 1000; // 300000 ms
+
+  let timeoutHandle;
+
+  // Function to redirect to login (index.html)
+  function redirectToLogin() {
+    alert("Session expired due to inactivity.");
+    localStorage.clear(); // Optional: clear session storage
+    window.location.href = 'index.html';
+  }
+
+  // Reset the inactivity timeout
+  function resetTimeout() {
+    clearTimeout(timeoutHandle);
+    timeoutHandle = setTimeout(redirectToLogin, TIMEOUT_DURATION);
+  }
+
+  // Events that indicate user activity
+  ['click', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(evt =>
+    document.addEventListener(evt, resetTimeout)
+  );
+
+  // Start the timeout when the page loads
+  window.onload = resetTimeout;
   </script>
 </body>
 </html>
