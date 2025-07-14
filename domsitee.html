@@ -192,7 +192,7 @@
       }
 
       setTimeout(() => {
-        document.getElementById('balance').textContent = '$' + balance.toLocaleString();
+        document.getElementById('balance').textContent = '$' + balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       }, 2500);
     });
   </script>
