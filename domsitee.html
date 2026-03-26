@@ -30,9 +30,7 @@
 <body class="w3-light-grey">
 
   <div class="top-bar">
-    <a href="domsitee.html">
-      <img src="fatlogo.png" alt="Fidelity America Trust Logo">
-    </a>
+    <a href="domsitee.html"><img src="fatlogo.png" alt="Fidelity America Trust Logo"></a>
     <h1>FIDELITY AMERICA TRUST</h1>
     <button class="w3-button w3-small w3-black" onclick="logout()">
       <i class="fa fa-sign-out"></i> Logout
@@ -80,18 +78,10 @@
     </div>
 
     <div class="w3-container">
-      <button class="w3-button w3-black w3-margin-bottom" onclick="location.href='send.html'">
-        <i class="fa fa-money"></i> Transfers
-      </button>
-      <button class="w3-button w3-black w3-margin-bottom" onclick="location.href='https://www.kayak.com/flights'">
-        <i class="fa fa-plane"></i> Book a Flight
-      </button>
-      <button class="w3-button w3-black w3-margin-bottom" onclick="location.href='https://www.booking.com/'">
-        <i class="fa fa-hotel"></i> Hotel Reservation
-      </button>
-      <button class="w3-button w3-black w3-margin-bottom" onclick="location.href='https://bitcoin.org/en/'">
-        <i class="fa fa-bitcoin"></i> Buy Bitcoin
-      </button>
+      <button class="w3-button w3-black w3-margin-bottom" onclick="location.href='send.html'"><i class="fa fa-money"></i> Transfers</button>
+      <button class="w3-button w3-black w3-margin-bottom" onclick="location.href='https://www.kayak.com/flights'"><i class="fa fa-plane"></i> Book a Flight</button>
+      <button class="w3-button w3-black w3-margin-bottom" onclick="location.href='https://www.booking.com/'"><i class="fa fa-hotel"></i> Hotel Reservation</button>
+      <button class="w3-button w3-black w3-margin-bottom" onclick="location.href='https://bitcoin.org/en/'"><i class="fa fa-bitcoin"></i> Buy Bitcoin</button>
     </div>
   </div>
 
@@ -99,67 +89,78 @@
     <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">LiisH</a></p>
   </footer>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-  // Session check
-  const userId = localStorage.getItem('user_id');
-  if (!userId) {
-    alert("Session expired. Please login again.");
-    window.location.href = "index.html";
-  }
+    const supabase = supabase.createClient('https://ivzrnkdyymngghidqkyd.supabase.co', 'sb_publishable__Lh8NcOsPD8nB-tUFQ8TWg_twyCtW0V');
 
-  // Update date-time every second
-  setInterval(function () {
-    const now = new Date();
-    document.getElementById("date-time").textContent = now.toLocaleString();
-  }, 1000);
+    async function loadDashboard() {
+      const session_token = localStorage.getItem('session_token');
+      if (!session_token) { alert("Session expired. Please login."); window.location.href = "index.html"; return; }
 
-  // Load and calculate balance from transactions
-  window.addEventListener('load', function () {
-    let transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
-    let balance = parseFloat(localStorage.getItem('starting_balance') || '7500500'); // default starting balance
+      // Get session
+      const { data: session, error: sessionError } = await supabase
+        .from('sessions')
+        .select('*')
+        .eq('session_token', session_token)
+        .single();
 
-    // Calculate balance for the current user
-    transactions.forEach(tx => {
-      if (tx.sender_account_id === userId && tx.status === 'completed') {
-        balance -= parseFloat(tx.amount);
-      } else if (tx.receiver_account_id === userId && tx.status === 'completed') {
-        balance += parseFloat(tx.amount);
+      if (sessionError || !session || new Date(session.expires_at) < new Date()) {
+        localStorage.clear();
+        alert("Session expired. Please login again.");
+        window.location.href = "index.html";
+        return;
       }
-    });
 
-    localStorage.setItem('balance', balance.toFixed(2));
+      // Get user
+      const { data: user } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', session.user_id)
+        .single();
 
-    setTimeout(() => {
-      document.getElementById('balance').textContent = '$' + balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    }, 500); // small delay for smooth loading
-  });
+      if (user) {
+        document.getElementById('profile-name').innerText = user.first_name || user.full_name;
+        document.getElementById('profile-pic').src = user.profile_pic || 'default.jpg';
+      }
 
-  // Logout function
-  function logout() {
-    localStorage.clear();
-    window.location.href = 'index.html';
-  }
+      // Get account balance
+      const { data: account } = await supabase
+        .from('accounts')
+        .select('*')
+        .eq('user_id', session.user_id)
+        .single();
 
-  // Session timeout (5 min)
-  const TIMEOUT_DURATION = 5 * 60 * 1000;
-  let timeoutHandle;
+      const balance = account?.balance || 0;
+      localStorage.setItem('balance', balance);
 
-  function redirectToLogin() {
-    alert("Session expired due to inactivity.");
-    localStorage.clear();
-    window.location.href = 'index.html';
-  }
+      document.getElementById('balance').textContent = '$' + parseFloat(balance).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
 
-  function resetTimeout() {
-    clearTimeout(timeoutHandle);
-    timeoutHandle = setTimeout(redirectToLogin, TIMEOUT_DURATION);
-  }
+    loadDashboard();
 
-  ['click', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(evt =>
-    document.addEventListener(evt, resetTimeout)
-  );
+    // Update date-time every second
+    setInterval(function () {
+      const now = new Date();
+      document.getElementById("date-time").textContent = now.toLocaleString();
+    }, 1000);
 
-  window.onload = resetTimeout;
-</script>
+    // Logout
+    async function logout() {
+      const session_token = localStorage.getItem('session_token');
+      if (session_token) {
+        await supabase.from('sessions').delete().eq('session_token', session_token);
+      }
+      localStorage.clear();
+      window.location.href = 'index.html';
+    }
+
+    // Session timeout (5 min)
+    const TIMEOUT_DURATION = 5 * 60 * 1000;
+    let timeoutHandle;
+    function redirectToLogin() { alert("Session expired due to inactivity."); logout(); }
+    function resetTimeout() { clearTimeout(timeoutHandle); timeoutHandle = setTimeout(redirectToLogin, TIMEOUT_DURATION); }
+    ['click', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(evt => document.addEventListener(evt, resetTimeout));
+    window.onload = resetTimeout;
+  </script>
 </body>
 </html>
