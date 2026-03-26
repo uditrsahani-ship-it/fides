@@ -30,9 +30,7 @@
 <body>
 
   <div class="top-bar">
-    <a href="domsitee.html">
-      <img src="fatlogo.png" alt="Logo">
-    </a>
+    <a href="domsitee.html"><img src="fatlogo.png" alt="Logo"></a>
     <h1>Transfer</h1>
   </div>
 
@@ -93,8 +91,10 @@
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // Initialize select2
+    const supabase = supabase.createClient('https://ivzrnkdyymngghidqkyd.supabase.co', 'sb_publishable__Lh8NcOsPD8nB-tUFQ8TWg_twyCtW0V');
+
     $(document).ready(function() {
       $('#bankName').select2({ placeholder: "Select a bank" });
       $('#bankName').on('change', function() {
@@ -103,11 +103,32 @@
       });
     });
 
-    // Session check
-    const userId = localStorage.getItem('user_id');
-    if (!userId) {
-      alert("Session expired. Please login again.");
-      window.location.href = "index.html";
+    async function checkSession() {
+      const session_token = localStorage.getItem('session_token');
+      if (!session_token) { alert("Session expired. Please login."); window.location.href = "index.html"; return null; }
+
+      const { data: session } = await supabase
+        .from('sessions')
+        .select('*')
+        .eq('session_token', session_token)
+        .single();
+
+      if (!session || new Date(session.expires_at) < new Date()) {
+        localStorage.clear();
+        alert("Session expired. Please login again.");
+        window.location.href = "index.html";
+        return null;
+      }
+      return session;
+    }
+
+    async function getUserAccount(user_id) {
+      const { data: account } = await supabase
+        .from('accounts')
+        .select('*')
+        .eq('user_id', user_id)
+        .single();
+      return account;
     }
 
     const transferForm = document.getElementById("transferForm");
@@ -116,64 +137,57 @@
     const confirmation = document.getElementById("confirmation");
     const toast = document.getElementById("toast");
 
-    transferBtn.addEventListener("click", function(e) {
+    transferBtn.addEventListener("click", async function(e) {
       e.preventDefault();
+
+      const session = await checkSession();
+      if (!session) return;
 
       const bankName = document.getElementById("bankName").value;
       const otherBankName = document.getElementById("otherBankInput").value.trim();
       const accountNumber = document.getElementById("accountNumber").value;
       const branchCode = document.getElementById("branchCode").value;
       const amount = parseFloat(document.getElementById("amount").value);
-      let balance = parseFloat(localStorage.getItem("balance")) || 0;
 
-      if (bankName === "Other" && otherBankName === "") {
-        alert("Please enter your bank name.");
-        return;
-      }
+      if (bankName === "Other" && otherBankName === "") { alert("Please enter your bank name."); return; }
+      if (amount <= 0) { alert("Please enter a valid amount."); return; }
 
-      if (amount <= 0) {
-        alert("Please enter a valid amount.");
-        return;
-      }
+      const senderAccount = await getUserAccount(session.user_id);
+      if (!senderAccount || amount > parseFloat(senderAccount.balance)) { alert("Insufficient funds."); return; }
 
-      if (amount > balance) {
-        alert("Insufficient funds.");
-        return;
-      }
-
-      // Confirm transfer
       if (!confirm(`Are you sure you want to send $${amount.toFixed(2)}?`)) return;
 
-      // Show loader
       transferForm.style.display = "none";
       loader.style.display = "block";
 
-      // Simulate backend processing
-      setTimeout(() => {
-        balance -= amount;
-        localStorage.setItem("balance", balance.toFixed(2));
+      // Deduct sender balance and create transaction
+      try {
+        // Subtract from sender
+        await supabase.from('accounts')
+          .update({ balance: parseFloat(senderAccount.balance) - amount })
+          .eq('id', senderAccount.id);
 
-        // Optionally, log the transaction
-        let transactions = JSON.parse(localStorage.getItem("transactions") || "[]");
-        transactions.push({
-          id: crypto.randomUUID(),
-          sender_account_id: userId,
+        // Create transaction record
+        await supabase.from('transactions').insert([{
+          sender_account_id: senderAccount.id,
           receiver_account_id: accountNumber,
-          amount: amount.toFixed(2),
-          bank_name: bankName === "Other" ? otherBankName : bankName,
-          branch_code: branchCode,
-          status: "completed",
-          reference: "TX-" + Date.now(),
+          amount,
+          status: 'completed',
+          reference: 'TX-' + Date.now(),
           created_at: new Date().toISOString()
-        });
-        localStorage.setItem("transactions", JSON.stringify(transactions));
+        }]);
 
         loader.style.display = "none";
         confirmation.style.display = "block";
         showToast();
 
         setTimeout(() => { window.location.href = "domsitee.html"; }, 2000);
-      }, 2500);
+
+      } catch (err) {
+        loader.style.display = "none";
+        alert("Transfer failed: " + err.message);
+        transferForm.style.display = "block";
+      }
     });
 
     function showToast() {
