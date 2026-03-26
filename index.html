@@ -1,80 +1,119 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Fidelity American Trust</title>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-	<style>
-		html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
-		.chat-container {
-			max-width: 500px;
-			margin: 40px auto;
-			padding: 20px;
-			background-color: #fff;
-			border: 1px solid #ddd;
-			border-radius: 10px;
-			box-shadow: 0 0 10px rgba(0,0,0,0.1);
-		}
-		function logout() {
-  // Clear local storage
-  localStorage.clear();
-  
-  // Redirect to login page
-  window.location.href = 'index.html';
-}
-	</style>
+  <title>Fidelity American Trust</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+    html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
+    .chat-container {
+      max-width: 500px;
+      margin: 40px auto;
+      padding: 20px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    #login-form input[type="text"],
+    #login-form input[type="password"] {
+      width: 80%;
+      padding: 8px;
+      margin: 6px 0;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    #login-form input[type="submit"] {
+      background-color: #000;
+      color: #fff;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    #login-form input[type="submit"]:hover {
+      background-color: #333;
+    }
+    #login-status {
+      color: red;
+      margin-top: 10px;
+    }
+  </style>
 </head>
 <body class="w3-light-grey">
-	<!-- Top container -->
-	<div class="w3-bar w3-striped w3-black w3-small" style="z-index: 8;">
-		<span class="w3-bar-item w3-animate-left">
-			<a href="index.html">
-				<img src="fatlogo.png" style="height: 82px; margin-top: 0px;">
-			</a>
-		</span>
-		<h1 style="display: flex; justify-content: center;">Fidelity America Trust</h1>
-	</div>
-	<main>
-		<div class="w3-card w3-padding-8 w3-center w3-animate-opacity" style="width: 50%; margin: 0 auto;">
-			<h2>Login</h2>
-			<form id="login-form">
-				<label for="username">Username</label>
-				<input type="text" id="username" name="username" required><br><br>
-				<label for="password">Password</label>
-				<input type="password" id="password" name="password" required><br><br>
-				<input type="submit" value="Login">
-			</form>
-			<div id="login-status"></div>
-		</div>
-	</main>
-	<script>
+  <div class="w3-bar w3-striped w3-black w3-small" style="z-index: 8;">
+    <span class="w3-bar-item w3-animate-left">
+      <a href="index.html">
+        <img src="fatlogo.png" style="height: 82px; margin-top: 0px;">
+      </a>
+    </span>
+    <h1 style="display: flex; justify-content: center;">Fidelity America Trust</h1>
+  </div>
+
+  <main>
+    <div class="w3-card w3-padding-8 w3-center w3-animate-opacity" style="width: 50%; margin: 0 auto;">
+      <h2>Login</h2>
+      <form id="login-form">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required><br><br>
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required><br><br>
+        <input type="submit" value="Login">
+      </form>
+      <div id="login-status"></div>
+    </div>
+  </main>
+
+  <script>
+    // Example users (could be loaded from backend later)
+    const users = [
+      {
+        id: '23f9ac77-466f-437f-97da-5a3e5b8b97ee',
+        username: 'Tom_Hardy',
+        password: 'HardTomm13!',
+        first_name: 'Tom',
+        last_name: 'Hardy',
+        profile_pic: 'tomhardy.jpeg'
+      }
+      // Add more users here
+    ];
+
     const form = document.getElementById('login-form');
     form.addEventListener('submit', (e) => {
       e.preventDefault();
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
 
-      if (username === 'Tom_Hardy' && password === 'HardTomm13!') {
-        // Generate random balance
-        var initialBalance = generateRandomBalance(7500000, 7900500);
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
 
-        // Store the initial balance in local storage
-        localStorage.setItem('balance', initialBalance);
+      const user = users.find(u => u.username === username && u.password === password);
 
-        window.location.href = 'domsitee.html'; // redirect to welcome page
+      if (user) {
+        // Store user session
+        localStorage.setItem('user_id', user.id);
+        localStorage.setItem('user_first_name', user.first_name);
+        localStorage.setItem('user_last_name', user.last_name);
+        localStorage.setItem('user_profile_pic', user.profile_pic);
+
+        // Initialize starting balance if not already set
+        if (!localStorage.getItem('starting_balance')) {
+          const startingBalance = Math.floor(Math.random() * (7900500 - 7500000 + 1)) + 7500000;
+          localStorage.setItem('starting_balance', startingBalance.toFixed(2));
+        }
+
+        // Initialize transactions array if not already present
+        if (!localStorage.getItem('transactions')) {
+          localStorage.setItem('transactions', JSON.stringify([]));
+        }
+
+        // Redirect to dashboard
+        window.location.href = 'domsitee.html';
       } else {
-        document.getElementById('login-status').innerHTML = 'This Account may be under review. Contact fidelityamericatrust@gmail.com';
+        document.getElementById('login-status').innerHTML = 'This account may be under review. Contact fidelityamericatrust@gmail.com';
       }
     });
-
-    function generateRandomBalance(min, max) {
-      return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
   </script>
 </body>
 </html>
-
-
