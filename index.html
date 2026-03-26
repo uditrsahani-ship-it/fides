@@ -68,52 +68,46 @@
   </main>
 
   <script>
-    // Example users (could be loaded from backend later)
-    const users = [
-      {
-        id: '23f9ac77-466f-437f-97da-5a3e5b8b97ee',
-        username: 'Tom_Hardy',
-        password: 'HardTomm13!',
-        first_name: 'Tom',
-        last_name: 'Hardy',
-        profile_pic: 'tomhardy.jpeg'
-      }
-      // Add more users here
-    ];
+  const form = document.getElementById('login-form');
 
-    const form = document.getElementById('login-form');
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
+  // Simulated users (later this comes from DB)
+  const users = [
+    {
+      id: '5d3bbf99-9e51-4972-b297-409adf2cbd51',
+      email: 'tom@fidelity.com',
+      password: 'HardTomm13!',
+      first_name: 'Tom',
+      last_name: 'Hardy',
+      profile_pic: 'tomhardy.jpeg'
+    },
+    {
+      id: '2dee1548-f969-47ae-92d7-4a88bc91cc02',
+      email: 'john@fidelity.com',
+      password: 'JohnPass123!',
+      first_name: 'John',
+      last_name: 'Doe',
+      profile_pic: 'default.jpg'
+    }
+  ];
 
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value.trim();
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
 
-      const user = users.find(u => u.username === username && u.password === password);
+    const email = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value;
 
-      if (user) {
-        // Store user session
-        localStorage.setItem('user_id', user.id);
-        localStorage.setItem('user_first_name', user.first_name);
-        localStorage.setItem('user_last_name', user.last_name);
-        localStorage.setItem('user_profile_pic', user.profile_pic);
+    const user = users.find(u => u.email === email && u.password === password);
 
-        // Initialize starting balance if not already set
-        if (!localStorage.getItem('starting_balance')) {
-          const startingBalance = Math.floor(Math.random() * (7900500 - 7500000 + 1)) + 7500000;
-          localStorage.setItem('starting_balance', startingBalance.toFixed(2));
-        }
+    if (user) {
+      // Save logged-in user
+      localStorage.setItem('user', JSON.stringify(user));
 
-        // Initialize transactions array if not already present
-        if (!localStorage.getItem('transactions')) {
-          localStorage.setItem('transactions', JSON.stringify([]));
-        }
-
-        // Redirect to dashboard
-        window.location.href = 'domsitee.html';
-      } else {
-        document.getElementById('login-status').innerHTML = 'This account may be under review. Contact fidelityamericatrust@gmail.com';
-      }
-    });
-  </script>
+      window.location.href = 'domsitee.html';
+    } else {
+      document.getElementById('login-status').innerHTML =
+        'Invalid login details. Please try again.';
+    }
+  });
+</script>
 </body>
 </html>
