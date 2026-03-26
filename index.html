@@ -36,26 +36,56 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const supabase = supabase.createClient('https://ivzrnkdyymngghidqkyd.supabase.co', 'sb_publishable__Lh8NcOsPD8nB-tUFQ8TWg_twyCtW0V');
+const supabase = supabase.createClient(
+  'https://ivzrnkdyymngghidqkyd.supabase.co',
+  'sb_publishable__Lh8NcOsPD8nB-tUFQ8TWg_twyCtW0V'
+);
 
-document.getElementById('loginForm').addEventListener('submit', async function(e){
-    e.preventDefault(); // ❌ Prevent default form submission
+const form = document.getElementById('login-form');
 
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
 
-    try {
-        const { data: user, error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
+  const email = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value;
 
-        // Save session token locally
-        localStorage.setItem('session_token', user.session.access_token);
+  try {
+    // Supabase Auth login
+    const { data: { session, user }, error } = await supabase.auth.signInWithPassword({
+      email, password
+    });
 
-        // Redirect to dashboard
-        window.location.href = 'domsitee.html';
-    } catch (err) {
-        alert('Login failed: ' + err.message);
+    if (error) {
+      document.getElementById('login-status').innerText = 'Invalid login details. Please try again.';
+      return;
     }
+
+    // Get account info
+    const { data: account } = await supabase
+      .from('accounts')
+      .select('*')
+      .eq('user_id', user.id)
+      .single();
+
+    // Save session and user locally
+    localStorage.setItem('session_token', session.access_token);
+    localStorage.setItem('user', JSON.stringify(user));
+    localStorage.setItem('user_id', user.id);
+    localStorage.setItem('balance', account?.balance || 0);
+
+    // Optional: log login attempt
+    await supabase.from('login_attempts').insert([{
+      user_id: user.id,
+      attempt_time: new Date().toISOString(),
+      succesful: true,
+      ip_address: '' // optionally capture real IP
+    }]);
+
+    window.location.href = 'domsitee.html';
+  } catch (err) {
+    console.error(err);
+    document.getElementById('login-status').innerText = 'Server error. Try again later.';
+  }
 });
 </script>
 </body>
