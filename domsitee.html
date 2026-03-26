@@ -100,63 +100,66 @@
   </footer>
 
   <script>
-    // Logout
-    function logout() {
-      localStorage.clear();
-      window.location.href = 'index.html';
-    }
+  // Session check
+  const userId = localStorage.getItem('user_id');
+  if (!userId) {
+    alert("Session expired. Please login again.");
+    window.location.href = "index.html";
+  }
 
-    // Show current date/time
-    setInterval(() => {
-      const now = new Date();
-      document.getElementById("date-time").textContent = now.toLocaleString();
-    }, 1000);
+  // Update date-time every second
+  setInterval(function () {
+    const now = new Date();
+    document.getElementById("date-time").textContent = now.toLocaleString();
+  }, 1000);
 
-    // Load user data from localStorage (or session)
-    window.addEventListener('load', () => {
-      const userId = localStorage.getItem('user_id');
-      const firstName = localStorage.getItem('first_name');
-      const lastName = localStorage.getItem('last_name');
-      const profilePic = localStorage.getItem('profile_pic');
-      let balance = parseFloat(localStorage.getItem('balance'));
+  // Load and calculate balance from transactions
+  window.addEventListener('load', function () {
+    let transactions = JSON.parse(localStorage.getItem('transactions') || '[]');
+    let balance = parseFloat(localStorage.getItem('starting_balance') || '7500500'); // default starting balance
 
-      if (!userId) {
-        // No session, redirect to login
-        logout();
-        return;
+    // Calculate balance for the current user
+    transactions.forEach(tx => {
+      if (tx.sender_account_id === userId && tx.status === 'completed') {
+        balance -= parseFloat(tx.amount);
+      } else if (tx.receiver_account_id === userId && tx.status === 'completed') {
+        balance += parseFloat(tx.amount);
       }
-
-      // Update sidebar profile
-      document.getElementById('profile-pic').src = profilePic || 'default.jpeg';
-      document.getElementById('profile-name').textContent = `${lastName || ''}, ${firstName || ''}`;
-
-      // Update balance
-      if (isNaN(balance)) {
-        balance = Math.floor(Math.random() * (7900500 - 7500000 + 1)) + 7500000;
-        localStorage.setItem('balance', balance);
-      }
-
-      setTimeout(() => {
-        document.getElementById('balance').textContent =
-          '$' + balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      }, 2500);
     });
 
-    // Auto logout after inactivity
-    const TIMEOUT_DURATION = 5 * 60 * 1000; // 5 minutes
-    let timeoutHandle;
-    function redirectToLogin() {
-      alert("Session expired due to inactivity.");
-      logout();
-    }
-    function resetTimeout() {
-      clearTimeout(timeoutHandle);
-      timeoutHandle = setTimeout(redirectToLogin, TIMEOUT_DURATION);
-    }
-    ['click', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(evt =>
-      document.addEventListener(evt, resetTimeout)
-    );
-    window.onload = resetTimeout;
-  </script>
+    localStorage.setItem('balance', balance.toFixed(2));
+
+    setTimeout(() => {
+      document.getElementById('balance').textContent = '$' + balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }, 500); // small delay for smooth loading
+  });
+
+  // Logout function
+  function logout() {
+    localStorage.clear();
+    window.location.href = 'index.html';
+  }
+
+  // Session timeout (5 min)
+  const TIMEOUT_DURATION = 5 * 60 * 1000;
+  let timeoutHandle;
+
+  function redirectToLogin() {
+    alert("Session expired due to inactivity.");
+    localStorage.clear();
+    window.location.href = 'index.html';
+  }
+
+  function resetTimeout() {
+    clearTimeout(timeoutHandle);
+    timeoutHandle = setTimeout(redirectToLogin, TIMEOUT_DURATION);
+  }
+
+  ['click', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(evt =>
+    document.addEventListener(evt, resetTimeout)
+  );
+
+  window.onload = resetTimeout;
+</script>
 </body>
 </html>
