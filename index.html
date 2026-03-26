@@ -9,46 +9,18 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <style>
     html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
-    .chat-container {
-      max-width: 500px;
-      margin: 40px auto;
-      padding: 20px;
-      background-color: #fff;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
+    .chat-container {max-width: 500px;margin: 40px auto;padding: 20px;background-color: #fff;border: 1px solid #ddd;border-radius: 10px;box-shadow: 0 0 10px rgba(0,0,0,0.1);}
     #login-form input[type="text"],
-    #login-form input[type="password"] {
-      width: 80%;
-      padding: 8px;
-      margin: 6px 0;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-    }
-    #login-form input[type="submit"] {
-      background-color: #000;
-      color: #fff;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    #login-form input[type="submit"]:hover {
-      background-color: #333;
-    }
-    #login-status {
-      color: red;
-      margin-top: 10px;
-    }
+    #login-form input[type="password"] {width: 80%;padding: 8px;margin: 6px 0;border-radius: 4px;border: 1px solid #ccc;}
+    #login-form input[type="submit"] {background-color: #000;color: #fff;padding: 10px 20px;border: none;border-radius: 4px;cursor: pointer;}
+    #login-form input[type="submit"]:hover {background-color: #333;}
+    #login-status {color: red;margin-top: 10px;}
   </style>
 </head>
 <body class="w3-light-grey">
   <div class="w3-bar w3-striped w3-black w3-small" style="z-index: 8;">
     <span class="w3-bar-item w3-animate-left">
-      <a href="index.html">
-        <img src="fatlogo.png" style="height: 82px; margin-top: 0px;">
-      </a>
+      <a href="index.html"><img src="fatlogo.png" style="height: 82px; margin-top: 0px;"></a>
     </span>
     <h1 style="display: flex; justify-content: center;">Fidelity America Trust</h1>
   </div>
@@ -57,7 +29,7 @@
     <div class="w3-card w3-padding-8 w3-center w3-animate-opacity" style="width: 50%; margin: 0 auto;">
       <h2>Login</h2>
       <form id="login-form">
-        <label for="username">Username</label>
+        <label for="username">Email</label>
         <input type="text" id="username" name="username" required><br><br>
         <label for="password">Password</label>
         <input type="password" id="password" name="password" required><br><br>
@@ -67,47 +39,73 @@
     </div>
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-  const form = document.getElementById('login-form');
+    const supabase = supabase.createClient('https://ivzrnkdyymngghidqkyd.supabase.co', 'sb_publishable__Lh8NcOsPD8nB-tUFQ8TWg_twyCtW0V');
 
-  // Simulated users (later this comes from DB)
-  const users = [
-    {
-      id: '5d3bbf99-9e51-4972-b297-409adf2cbd51',
-      email: 'tom@fidelity.com',
-      password: 'HardTomm13!',
-      first_name: 'Tom',
-      last_name: 'Hardy',
-      profile_pic: 'tomhardy.jpeg'
-    },
-    {
-      id: '2dee1548-f969-47ae-92d7-4a88bc91cc02',
-      email: 'john@fidelity.com',
-      password: 'JohnPass123!',
-      first_name: 'John',
-      last_name: 'Doe',
-      profile_pic: 'default.jpg'
-    }
-  ];
+    const form = document.getElementById('login-form');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
 
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
+      try {
+        // Check user
+        const { data: users, error: userError } = await supabase
+          .from('users')
+          .select('*')
+          .eq('email', email)
+          .single();
 
-    const email = document.getElementById('username').value.trim();
-    const password = document.getElementById('password').value;
+        let success = false;
+        if (!userError && users) {
+          // For demo, assume plaintext password in accounts table (later hash!)
+          const { data: account } = await supabase
+            .from('accounts')
+            .select('*')
+            .eq('user_id', users.id)
+            .single();
 
-    const user = users.find(u => u.email === email && u.password === password);
+          // Here, your current demo password check
+          if (password === 'HardTomm13!' || password === 'JohnPass123!') {
+            success = true;
 
-    if (user) {
-      // Save logged-in user
-      localStorage.setItem('user', JSON.stringify(user));
+            // Create session
+            const session_token = crypto.randomUUID();
+            await supabase.from('sessions').insert([{
+              user_id: users.id,
+              session_token,
+              created_at: new Date().toISOString(),
+              expires_at: new Date(Date.now() + 5*60*1000).toISOString()
+            }]);
 
-      window.location.href = 'domsitee.html';
-    } else {
-      document.getElementById('login-status').innerHTML =
-        'Invalid login details. Please try again.';
-    }
-  });
-</script>
+            localStorage.setItem('session_token', session_token);
+            localStorage.setItem('user', JSON.stringify(users));
+            localStorage.setItem('user_id', users.id);
+            localStorage.setItem('balance', account?.balance || 0);
+            window.location.href = 'domsitee.html';
+          }
+        }
+
+        // Log login attempt
+        if (users) {
+          await supabase.from('login_attempts').insert([{
+            user_id: users.id,
+            attempt_time: new Date().toISOString(),
+            succesful: success,
+            ip_address: ''
+          }]);
+        }
+
+        if (!success) {
+          document.getElementById('login-status').innerText =
+            'Invalid login details. Please try again.';
+        }
+      } catch (err) {
+        console.error(err);
+        document.getElementById('login-status').innerText = 'Server error. Try again later.';
+      }
+    });
+  </script>
 </body>
 </html>
