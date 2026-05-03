@@ -9,100 +9,96 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <style>
     html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
-    .chat-container {max-width: 500px;margin: 40px auto;padding: 20px;background-color: #fff;border: 1px solid #ddd;border-radius: 10px;box-shadow: 0 0 10px rgba(0,0,0,0.1);}
-    #login-form input[type="text"],
-    #login-form input[type="password"] {width: 80%;padding: 8px;margin: 6px 0;border-radius: 4px;border: 1px solid #ccc;}
-    #login-form input[type="submit"] {background-color: #000;color: #fff;padding: 10px 20px;border: none;border-radius: 4px;cursor: pointer;}
-    #login-form input[type="submit"]:hover {background-color: #333;}
-    #login-status {color: red;margin-top: 10px;}
+    #loginForm input {width: 80%; padding: 8px; margin: 6px 0; border-radius: 4px; border: 1px solid #ccc;}
+    #loginForm button {background-color: #000; color: #fff; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; width: 80%;}
+    #login-status {color: red; margin-top: 10px; font-weight: bold;}
   </style>
 </head>
 <body class="w3-light-grey">
-  <div class="w3-bar w3-striped w3-black w3-small" style="z-index: 8;">
-    <span class="w3-bar-item w3-animate-left">
-      <a href="index.html"><img src="fatlogo.png" style="height: 82px; margin-top: 0px;"></a>
-    </span>
-    <h1 style="display: flex; justify-content: center;">Fidelity America Trust</h1>
+
+  <div class="w3-bar w3-striped w3-black w3-small">
+    <h1 style="text-align: center;">Fidelity America Trust</h1>
   </div>
 
   <main>
-    <div class="w3-card w3-padding-8 w3-center w3-animate-opacity" style="width: 50%; margin: 0 auto;">
+    <div class="w3-card w3-padding-16 w3-center w3-animate-opacity" style="width: 50%; margin: 50px auto; background: white;">
       <h2>Login</h2>
+      <!-- Form ID fixed -->
       <form id="loginForm">
-  <input type="email" id="email" required placeholder="Email">
-  <input type="password" id="password" required placeholder="Password">
-  <button type="submit">Login</button>
-</form>
+        <input type="email" id="email" required placeholder="Email"><br>
+        <input type="password" id="password" required placeholder="Password"><br>
+        <button type="submit">Login</button>
+      </form>
+      <!-- Added the status div so errors can be displayed -->
+      <div id="login-status"></div>
+    </div>
+  </main>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  const supabase = supabase.createClient(
-    'https://ivzrnkdyymngghidqkyd.supabase.co', 
-    'sb_publishable__Lh8NcOsPD8nB-tUFQ8TWg_twyCtW0V'
-  );
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // Changed variable name to 'supabaseClient' to avoid library conflict
+    const supabaseClient = supabase.createClient(
+      'https://ivzrnkdyymngghidqkyd.supabase.co', 
+      'sb_publishable__Lh8NcOsPD8nB-tUFQ8TWg_twyCtW0V'
+    );
 
-  const form = document.getElementById('login-form');
+    const form = document.getElementById('loginForm');
+    const status = document.getElementById('login-status');
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault(); // This NOW works because the form was found
+      status.innerText = "Authenticating...";
 
-    const email = document.getElementById('username').value.trim();
-    const password = document.getElementById('password').value;
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
 
-    try {
-      // Sign in via Supabase Auth
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password
-      });
+      try {
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
+          email,
+          password
+        });
 
-      if (error || !data.user) {
-        document.getElementById('login-status').innerText =
-          'Invalid email or password. Please try again.';
-        return;
-      }
+        if (error || !data.user) {
+          status.innerText = 'Invalid email or password.';
+          return;
+        }
 
-      const user = data.user;
+        const user = data.user;
 
-      // Fetch or create user's account in accounts table
-      let { data: account, error: accountError } = await supabase
-        .from('accounts')
-        .select('*')
-        .eq('user_id', user.id)
-        .single();
-
-      if (accountError || !account) {
-        // If no account exists yet, create one with $0 balance
-        const { data: newAccount, error: createError } = await supabase
+        // Fetch or create user's account
+        let { data: account, error: accountError } = await supabaseClient
           .from('accounts')
-          .insert([{
-            user_id: user.id,
-            balance: 0,
-            currency: 'USD',
-            created_at: new Date().toISOString()
-          }])
-          .select()
-          .single();
+          .select('*')
+          .eq('user_id', user.id)
+          .maybeSingle(); // maybeSingle is safer than .single() for new users
 
-        if (createError) throw createError;
-        account = newAccount;
+        if (accountError || !account) {
+          const { data: newAccount, error: createError } = await supabaseClient
+            .from('accounts')
+            .insert([{
+              user_id: user.id,
+              balance: 0,
+              currency: 'USD'
+            }])
+            .select()
+            .single();
+
+          if (createError) throw createError;
+          account = newAccount;
+        }
+
+        // Save session info
+        localStorage.setItem('user_id', user.id);
+        localStorage.setItem('balance', account.balance || 0);
+
+        // Redirect
+        window.location.href = 'domsitee.html';
+        
+      } catch (err) {
+        console.error(err);
+        status.innerText = 'Server error. Please try again later.';
       }
-
-      // Save session info in localStorage
-      localStorage.setItem('session_token', crypto.randomUUID());
-      localStorage.setItem('user', JSON.stringify(user));
-      localStorage.setItem('user_id', user.id);
-      localStorage.setItem('balance', account.balance || 0);
-
-      // Redirect to dashboard
-      window.location.href = 'domsitee.html';
-    } catch (err) {
-      console.error(err);
-      document.getElementById('login-status').innerText = 
-        'Server error. Please try again later.';
-    }
-  });
-</script>
+    });
+  </script>
 </body>
 </html>
