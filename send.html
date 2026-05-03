@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FIDELITY AMERICA TRUST BANK</title>
+  <title>FIDELITY AMERICA TRUST BANK - Transfer</title>
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -14,186 +14,158 @@
     .top-bar { display: flex; align-items: center; justify-content: space-between; background-color: #000; padding: 10px 20px; color: #fff; }
     .top-bar img { height: 60px; }
     .top-bar h1 { margin: 0; font-size: 22px; text-align: center; flex: 1; }
+    
     .transfer-card { max-width: 500px; margin: 40px auto; background-color: #fff; padding: 24px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
     .w3-input, .w3-select, .select2-container { margin-top: 8px; width: 100% !important; }
-    .toast { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 4px; padding: 16px; position: fixed; z-index: 10; bottom: 30px; left: 50%; transform: translateX(-50%); opacity: 0; transition: opacity 0.5s ease-in-out, bottom 0.5s ease-in-out; }
-    .toast.show { visibility: visible; opacity: 1; bottom: 50px; }
-    .confirmation { display: none; text-align: center; padding: 40px; }
-    .confirmation i { font-size: 60px; color: #4CAF50; animation: pop 0.6s ease-out; }
-    @keyframes pop { 0% { transform: scale(0); opacity: 0; } 60% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(1); } }
-    .loader { border: 6px solid #f3f3f3; border-top: 6px solid #4CAF50; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 20px auto; }
+
+    /* Modern Spinner */
+    .loader-ring {
+      display: inline-block; width: 80px; height: 80px;
+      border: 8px solid #f3f3f3; border-radius: 50%;
+      border-top: 8px solid #4CAF50;
+      animation: spin 1s linear infinite;
+    }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    #loaderWrapper { display: none; text-align: center; padding: 30px; }
-    #otherBankInput { display: none; margin-top: 10px; }
+
+    #loaderWrapper { display: none; text-align: center; padding: 50px 20px; }
+    .confirmation { display: none; text-align: center; padding: 40px; }
+    .confirmation i { font-size: 80px; color: #4CAF50; animation: pop 0.6s ease-out; }
+    @keyframes pop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+
+    /* Modal Styling */
+    .modal-content { border-radius: 12px; max-width: 400px; }
   </style>
 </head>
 <body>
 
   <div class="top-bar">
     <a href="domsitee.html"><img src="fatlogo.png" alt="Logo"></a>
-    <h1>Transfer</h1>
+    <h1>Transfer Funds</h1>
   </div>
 
   <div class="transfer-card w3-animate-opacity">
+    <!-- Transfer Form -->
     <form id="transferForm">
       <div class="w3-section">
-        <label>Account Number</label>
-        <input type="text" id="accountNumber" name="accountNumber" class="w3-input w3-border" required>
+        <label><b>Recipient Account Number</b></label>
+        <input type="text" id="accountNumber" class="w3-input w3-border" placeholder="e.g. 3142800903" required>
       </div>
+      
       <div class="w3-section">
-        <label>Bank Name</label>
-        <select id="bankName" name="bankName" class="w3-select w3-border" required>
+        <label><b>Bank Name</b></label>
+        <select id="bankName" class="w3-select w3-border" required>
           <option value="" disabled selected>Select a bank</option>
           <option value="Bank of America">Bank of America</option>
           <option value="JPMorgan Chase">JPMorgan Chase</option>
           <option value="Citibank">Citibank</option>
           <option value="Wells Fargo">Wells Fargo</option>
-          <option value="HSBC">HSBC</option>
-          <option value="Barclays">Barclays</option>
-          <option value="Deutsche Bank">Deutsche Bank</option>
-          <option value="BNP Paribas">BNP Paribas</option>
-          <option value="Credit Suisse">Credit Suisse</option>
-          <option value="UBS">UBS</option>
-          <option value="Royal Bank of Canada">Royal Bank of Canada</option>
-          <option value="Standard Chartered">Standard Chartered</option>
-          <option value="Santander">Santander</option>
           <option value="Other">Other</option>
         </select>
-        <input type="text" id="otherBankInput" name="otherBankName" class="w3-input w3-border" placeholder="Enter your bank name">
       </div>
+
       <div class="w3-section">
-        <label>Sort Code</label>
-        <input type="text" id="branchCode" name="branchCode" class="w3-input w3-border" pattern="[0-9]{6}" required>
+        <label><b>Amount to Send ($)</b></label>
+        <input type="number" id="amount" class="w3-input w3-border" placeholder="0.00" step="0.01" required>
       </div>
-      <div class="w3-section">
-        <label>Amount to Send</label>
-        <input type="number" id="amount" name="amount" class="w3-input w3-border" required>
-      </div>
-      <button id="transferBtn" class="w3-button w3-block w3-green w3-section">Transfer</button>
+
+      <button type="button" onclick="openVerifyModal()" class="w3-button w3-block w3-green w3-section w3-padding-large" style="border-radius: 5px;"><b>CONTINUE</b></button>
     </form>
 
+    <!-- Processing View -->
     <div id="loaderWrapper">
-      <div class="loader"></div>
-      <p>Processing Transfer...</p>
+      <div class="loader-ring"></div>
+      <h4 style="margin-top: 20px;">Securing Transaction...</h4>
+      <p class="w3-text-grey">Processing encrypted transfer request</p>
     </div>
 
+    <!-- Success View -->
     <div class="confirmation" id="confirmation">
       <i class="fa fa-check-circle"></i>
-      <h3>Transfer Successful!</h3>
+      <h2 class="w3-text-green">Transfer Successful!</h2>
+      <p id="successMessage" class="w3-text-grey"></p>
     </div>
   </div>
 
-  <div id="toast" class="toast">Transfer Completed</div>
-
-  <footer class="w3-container w3-padding-16 w3-light-grey w3-center">
-    <p>Powered by <a href="#">LiisH</a></p>
-  </footer>
+  <!-- Verification Modal -->
+  <div id="verifyModal" class="w3-modal">
+    <div class="w3-modal-content w3-animate-top w3-card-4 modal-content">
+      <header class="w3-container w3-green w3-center w3-padding-16">
+        <span onclick="document.getElementById('verifyModal').style.display='none'" class="w3-button w3-display-topright">&times;</span>
+        <h3>Confirm Transfer</h3>
+      </header>
+      <div class="w3-container w3-padding-24 w3-center">
+        <p>You are about to transfer <br><b id="confirmAmount" style="font-size: 24px;"></b></p>
+        <p class="w3-small w3-text-grey">Recipient: <span id="confirmAcc"></span></p>
+        <hr>
+        <p><b>Proceed with this transaction?</b></p>
+        <button onclick="executeTransfer()" class="w3-button w3-green w3-round w3-margin-right">Yes, Send Now</button>
+        <button onclick="document.getElementById('verifyModal').style.display='none'" class="w3-button w3-red w3-round">Cancel</button>
+      </div>
+    </div>
+  </div>
 
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    const supabase = supabase.createClient('https://ivzrnkdyymngghidqkyd.supabase.co', 'sb_publishable__Lh8NcOsPD8nB-tUFQ8TWg_twyCtW0V');
+    // Configuration
+    const PROTOTYPE_ACC = "3142800903";
 
-    $(document).ready(function() {
-      $('#bankName').select2({ placeholder: "Select a bank" });
-      $('#bankName').on('change', function() {
-        if ($(this).val() === 'Other') { $('#otherBankInput').slideDown(); } 
-        else { $('#otherBankInput').slideUp(); }
-      });
-    });
+    function openVerifyModal() {
+      const acc = document.getElementById("accountNumber").value;
+      const amt = document.getElementById("amount").value;
+      const bank = document.getElementById("bankName").value;
 
-    async function checkSession() {
-      const session_token = localStorage.getItem('session_token');
-      if (!session_token) { alert("Session expired. Please login."); window.location.href = "index.html"; return null; }
-
-      const { data: session } = await supabase
-        .from('sessions')
-        .select('*')
-        .eq('session_token', session_token)
-        .single();
-
-      if (!session || new Date(session.expires_at) < new Date()) {
-        localStorage.clear();
-        alert("Session expired. Please login again.");
-        window.location.href = "index.html";
-        return null;
+      if (!acc || !amt || !bank) {
+        alert("Please fill in all transfer details.");
+        return;
       }
-      return session;
+
+      // Check for specific account requirement
+      if (acc !== PROTOTYPE_ACC) {
+        alert("Error: Transfer restricted to authorized prototype recipient (3142800903).");
+        return;
+      }
+
+      document.getElementById("confirmAmount").innerText = "$" + parseFloat(amt).toLocaleString();
+      document.getElementById("confirmAcc").innerText = acc;
+      document.getElementById("verifyModal").style.display = 'block';
     }
 
-    async function getUserAccount(user_id) {
-      const { data: account } = await supabase
-        .from('accounts')
-        .select('*')
-        .eq('user_id', user_id)
-        .single();
-      return account;
-    }
-
-    const transferForm = document.getElementById("transferForm");
-    const transferBtn = document.getElementById("transferBtn");
-    const loader = document.getElementById("loaderWrapper");
-    const confirmation = document.getElementById("confirmation");
-    const toast = document.getElementById("toast");
-
-    transferBtn.addEventListener("click", async function(e) {
-      e.preventDefault();
-
-      const session = await checkSession();
-      if (!session) return;
-
-      const bankName = document.getElementById("bankName").value;
-      const otherBankName = document.getElementById("otherBankInput").value.trim();
-      const accountNumber = document.getElementById("accountNumber").value;
-      const branchCode = document.getElementById("branchCode").value;
+    function executeTransfer() {
       const amount = parseFloat(document.getElementById("amount").value);
+      const isPrototype = localStorage.getItem('is_prototype') === 'true';
+      let currentBalance = parseFloat(localStorage.getItem('balance') || 0);
 
-      if (bankName === "Other" && otherBankName === "") { alert("Please enter your bank name."); return; }
-      if (amount <= 0) { alert("Please enter a valid amount."); return; }
-
-      const senderAccount = await getUserAccount(session.user_id);
-      if (!senderAccount || amount > parseFloat(senderAccount.balance)) { alert("Insufficient funds."); return; }
-
-      if (!confirm(`Are you sure you want to send $${amount.toFixed(2)}?`)) return;
-
-      transferForm.style.display = "none";
-      loader.style.display = "block";
-
-      // Deduct sender balance and create transaction
-      try {
-        // Subtract from sender
-        await supabase.from('accounts')
-          .update({ balance: parseFloat(senderAccount.balance) - amount })
-          .eq('id', senderAccount.id);
-
-        // Create transaction record
-        await supabase.from('transactions').insert([{
-          sender_account_id: senderAccount.id,
-          receiver_account_id: accountNumber,
-          amount,
-          status: 'completed',
-          reference: 'TX-' + Date.now(),
-          created_at: new Date().toISOString()
-        }]);
-
-        loader.style.display = "none";
-        confirmation.style.display = "block";
-        showToast();
-
-        setTimeout(() => { window.location.href = "domsitee.html"; }, 2000);
-
-      } catch (err) {
-        loader.style.display = "none";
-        alert("Transfer failed: " + err.message);
-        transferForm.style.display = "block";
+      // Check Funds
+      if (amount > currentBalance) {
+        alert("Transaction Failed: Insufficient funds in your available balance.");
+        document.getElementById('verifyModal').style.display = 'none';
+        return;
       }
-    });
 
-    function showToast() {
-      toast.classList.add("show");
-      setTimeout(() => toast.classList.remove("show"), 2500);
+      // Start UI Transition
+      document.getElementById('verifyModal').style.display = 'none';
+      document.getElementById("transferForm").style.display = "none";
+      document.getElementById("loaderWrapper").style.display = "block";
+
+      // Simulation (5 Seconds)
+      setTimeout(() => {
+        // Update Local Storage (Simulated Deduction)
+        const newBalance = (currentBalance - amount).toFixed(2);
+        localStorage.setItem('balance', newBalance);
+
+        // Transition to Success
+        document.getElementById("loaderWrapper").style.display = "none";
+        document.getElementById("confirmation").style.display = "block";
+        document.getElementById("successMessage").innerText = `Successfully sent $${amount.toLocaleString()} to Account ${PROTOTYPE_ACC}.`;
+
+        // Redirect after 3 seconds
+        setTimeout(() => {
+          window.location.href = "domsitee.html";
+        }, 3000);
+
+      }, 5000); // 5 second rolling ring
     }
   </script>
+
 </body>
 </html>
