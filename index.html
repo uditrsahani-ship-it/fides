@@ -6,167 +6,78 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <style>
     html,body,h1,h2,h3,h4,h5 {font-family: "Raleway", sans-serif}
     .login-box { max-width: 450px; margin: 50px auto; background: white; border-radius: 8px; }
     #loginForm input { width: 85%; padding: 12px; margin: 8px 0; border-radius: 4px; border: 1px solid #ccc; font-size: 16px; }
-    #loginForm button { background-color: #000; color: #fff; padding: 12px; border: none; border-radius: 4px; cursor: pointer; width: 85%; font-weight: bold; font-size: 16px; transition: 0.3s; }
-    #loginForm button:hover { background-color: #333; }
-    
-    /* Status & Debug Styles */
-    #login-status { color: #d32f2f; margin-top: 15px; font-weight: bold; min-height: 20px; }
-    #debug-log { 
-      width: 90%; margin: 20px auto; padding: 10px; background: #222; color: #0f0; 
-      font-family: monospace; font-size: 11px; text-align: left; border-radius: 4px;
-      max-height: 150px; overflow-y: auto; display: block;
-    }
-    .w3-bar { display: flex; align-items: center; justify-content: space-between; padding: 0 16px; }
+    #loginForm button { background-color: #000; color: #fff; padding: 12px; border: none; border-radius: 4px; cursor: pointer; width: 85%; font-weight: bold; font-size: 16px; }
+    #login-status { color: #d32f2f; margin-top: 15px; font-weight: bold; }
+    .w3-bar { display: flex; align-items: center; justify-content: space-between; padding: 0 16px; height: 100px; }
   </style>
 </head>
 <body class="w3-light-grey">
 
-  <!-- Header Section -->
-  <div class="w3-bar w3-black w3-card" style="height: 100px;">
+  <!-- Header with Logo -->
+  <div class="w3-bar w3-black w3-card">
     <a href="index.html" class="w3-bar-item">
       <img src="fatlogo.png" alt="Logo" style="height: 80px;">
     </a>
     <h2 class="w3-center" style="flex-grow: 1; margin: 0; font-weight: bold;">Fidelity America Trust</h2>
-    <div style="width: 100px;"></div> <!-- Spacer to keep title centered -->
+    <div style="width: 100px;"></div> 
   </div>
 
   <main class="w3-container">
     <div class="w3-card-4 login-box w3-center w3-padding-32 w3-animate-opacity">
       <h2 style="font-weight: bold;">Secure Login</h2>
-      <p class="w3-text-grey">Access your online banking dashboard</p>
+      <p class="w3-text-grey">Prototype Access Mode</p>
       
       <form id="loginForm">
-        <input type="email" id="email" required placeholder="Email Address" autocomplete="email">
-        <input type="password" id="password" required placeholder="Password" autocomplete="current-password">
+        <input type="email" id="email" required placeholder="Email Address">
+        <input type="password" id="password" required placeholder="Password">
         <div id="login-status"></div>
         <button type="submit" id="submitBtn">LOG IN</button>
       </form>
-
-      <!-- Debug Monitor (Temporary) -->
-      <div id="debug-log">
-        [System Initialization...]
-      </div>
     </div>
   </main>
 
-  <!-- Supabase Library -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <script>
-    // 1. System Logging Helper
-    const debugLog = document.getElementById('debug-log');
-    function log(msg) {
-      const time = new Date().toLocaleTimeString();
-      debugLog.innerHTML += `<br>[${time}] ${msg}`;
-      debugLog.scrollTop = debugLog.scrollHeight;
-      console.log(`[DEBUG] ${msg}`);
-    }
-
-    // 2. Initialize Supabase with Fixes for Tracking Prevention
-    const SUPABASE_URL = 'https://ivzrnkdyymngghidqkyd.supabase.co';
-    const SUPABASE_KEY = 'sb_publishable__Lh8NcOsPD8nB-tUFQ8TWg_twyCtW0V';
-    
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-      auth: {
-        persistSession: true,
-        autoRefreshToken: true,
-        detectSessionInUrl: true,
-        storage: window.localStorage
-      }
-    });
-
-    log("Supabase Client Loaded.");
-
     const loginForm = document.getElementById('loginForm');
     const statusDiv = document.getElementById('login-status');
     const submitBtn = document.getElementById('submitBtn');
 
-    // 3. Login Event Listener
-    loginForm.addEventListener('submit', async (e) => {
+    // HARDCODED CREDENTIALS FOR PROTOTYPE
+    const PROTOTYPE_USER = "mcmcquitty@yahoo.com";
+    const PROTOTYPE_PASS = "ChaseMatt14!";
+
+    loginForm.addEventListener('submit', (e) => {
       e.preventDefault();
       
-      // Reset UI state
-      statusDiv.innerText = "";
+      const emailInput = document.getElementById('email').value.trim();
+      const passInput = document.getElementById('password').value;
+
+      statusDiv.innerText = "Authenticating with Vault...";
       submitBtn.disabled = true;
-      submitBtn.innerText = "VERIFYING...";
-      
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value;
 
-      log(`Attempting login for: ${email}`);
-
-      try {
-        // Attempt Authentication
-        const { data, error } = await supabaseClient.auth.signInWithPassword({
-          email: email,
-          password: password
-        });
-
-        if (error) {
-          log(`AUTH FAILED: ${error.message}`);
-          statusDiv.innerText = "Invalid credentials. Please try again.";
-          submitBtn.disabled = false;
-          submitBtn.innerText = "LOG IN";
-          return;
-        }
-
-        const user = data.user;
-        log(`SUCCESS: Auth token received for UID ${user.id.substring(0,8)}...`);
-
-        // Check/Create Account Data
-        log("Fetching bank account balance...");
-        let { data: account, error: accError } = await supabaseClient
-          .from('accounts')
-          .select('*')
-          .eq('user_id', user.id)
-          .maybeSingle();
-
-        if (accError) {
-          log(`DB ERROR: ${accError.message}`);
-        }
-
-        if (!account) {
-          log("No account found. Creating new user ledger...");
-          const { data: newAcc, error: createError } = await supabaseClient
-            .from('accounts')
-            .insert([{ user_id: user.id, balance: 0, currency: 'USD' }])
-            .select().single();
+      // Artificial delay to make it look like it's checking a server
+      setTimeout(() => {
+        if (emailInput === PROTOTYPE_USER && passInput === PROTOTYPE_PASS) {
+          statusDiv.style.color = "green";
+          statusDiv.innerText = "Access Granted. Redirecting...";
           
-          if (createError) log(`CREATE ERROR: ${createError.message}`);
-          account = newAcc;
-        }
+          // Set mock session data so the dashboard doesn't crash
+          localStorage.setItem('user_email', emailInput);
+          localStorage.setItem('user_id', 'proto_user_12345');
+          localStorage.setItem('is_prototype', 'true');
 
-        // Save local session info for dashboard
-        localStorage.setItem('user_id', user.id);
-        localStorage.setItem('user_email', user.email);
-        localStorage.setItem('balance', account ? account.balance : 0);
-
-        log("Redirecting to Dashboard...");
-        setTimeout(() => {
+          // Redirect to dashboard
           window.location.href = 'domsitee.html';
-        }, 1000);
-
-      } catch (err) {
-        log(`SYSTEM CRASH: ${err.message}`);
-        statusDiv.innerText = "System error. Please contact support.";
-        submitBtn.disabled = false;
-        submitBtn.innerText = "LOG IN";
-      }
+        } else {
+          statusDiv.style.color = "red";
+          statusDiv.innerText = "Invalid credentials. Please check your email or password.";
+          submitBtn.disabled = false;
+        }
+      }, 1500); 
     });
-
-    // 4. Verification Check
-    window.onload = async () => {
-      const { data } = await supabaseClient.auth.getSession();
-      if (data.session) {
-        log("Active session found. Auto-redirecting...");
-        window.location.href = 'domsitee.html';
-      }
-    };
   </script>
 </body>
 </html>
