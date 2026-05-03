@@ -90,77 +90,82 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    const supabase = supabase.createClient('https://ivzrnkdyymngghidqkyd.supabase.co', 'sb_publishable__Lh8NcOsPD8nB-tUFQ8TWg_twyCtW0V');
+    // Initialize Supabase (kept for structure, but bypassed in Prototype Mode)
+    const supabaseClient = supabase.createClient('https://ivzrnkdyymngghidqkyd.supabase.co', 'sb_publishable__Lh8NcOsPD8nB-tUFQ8TWg_twyCtW0V');
 
     async function loadDashboard() {
+      // 1. Check if we are in Prototype Mode
+      const isPrototype = localStorage.getItem('is_prototype') === 'true';
+      const userEmail = localStorage.getItem('user_email');
+
+      if (isPrototype) {
+        // --- PROTOTYPE MODE LOGIC ---
+        console.log("Running in Prototype Mode for:", userEmail);
+        
+        document.getElementById('profile-name').innerText = "Matthew"; // Hardcoded for demo
+        document.getElementById('profile-pic').src = 'https://www.w3schools.com/w3images/avatar2.png'; // Demo avatar
+
+        // Hardcode balance between $2,000,200.01 and $2,921,021.12
+        const min = 2000200.01;
+        const max = 2921021.12;
+        const randomBalance = Math.random() * (max - min) + min;
+
+        // Save to localStorage so it persists during this session
+        const finalBalance = localStorage.getItem('balance') || randomBalance;
+        localStorage.setItem('balance', finalBalance);
+
+        displayBalance(finalBalance);
+        return; // Exit function, don't try to call Supabase
+      }
+
+      // --- REAL DATABASE LOGIC (Bypassed in Prototype) ---
       const session_token = localStorage.getItem('session_token');
-      if (!session_token) { alert("Session expired. Please login."); window.location.href = "index.html"; return; }
+      if (!session_token) { window.location.href = "index.html"; return; }
 
-      // Get session
-      const { data: session, error: sessionError } = await supabase
-        .from('sessions')
-        .select('*')
-        .eq('session_token', session_token)
-        .single();
+      const { data: session } = await supabaseClient.from('sessions').select('*').eq('session_token', session_token).single();
+      
+      if (session) {
+        const { data: user } = await supabaseClient.from('users').select('*').eq('id', session.user_id).single();
+        if (user) {
+          document.getElementById('profile-name').innerText = user.first_name || "User";
+          document.getElementById('profile-pic').src = user.profile_pic || 'default.jpg';
+        }
 
-      if (sessionError || !session || new Date(session.expires_at) < new Date()) {
-        localStorage.clear();
-        alert("Session expired. Please login again.");
-        window.location.href = "index.html";
-        return;
+        const { data: account } = await supabaseClient.from('accounts').select('balance').eq('user_id', session.user_id).single();
+        displayBalance(account?.balance || 0);
       }
-
-      // Get user
-      const { data: user } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', session.user_id)
-        .single();
-
-      if (user) {
-        document.getElementById('profile-name').innerText = user.first_name || user.full_name;
-        document.getElementById('profile-pic').src = user.profile_pic || 'default.jpg';
-      }
-
-      // Get account balance
-      const { data: account } = await supabase
-        .from('accounts')
-        .select('*')
-        .eq('user_id', session.user_id)
-        .single();
-
-      const balance = account?.balance || 0;
-      localStorage.setItem('balance', balance);
-
-      document.getElementById('balance').textContent = '$' + parseFloat(balance).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
+    function displayBalance(amount) {
+      document.getElementById('balance').textContent = '$' + parseFloat(amount).toLocaleString(undefined, { 
+        minimumFractionDigits: 2, 
+        maximumFractionDigits: 2 
+      });
+    }
+
+    // Initialize
     loadDashboard();
 
     // Update date-time every second
-    setInterval(function () {
+    setInterval(() => {
       const now = new Date();
       document.getElementById("date-time").textContent = now.toLocaleString();
     }, 1000);
 
-    // Logout
-    async function logout() {
-      const session_token = localStorage.getItem('session_token');
-      if (session_token) {
-        await supabase.from('sessions').delete().eq('session_token', session_token);
-      }
+    // Logout function
+    function logout() {
       localStorage.clear();
       window.location.href = 'index.html';
     }
 
-    // Session timeout (5 min)
-    const TIMEOUT_DURATION = 5 * 60 * 1000;
+    // Inactivity timeout (optional for prototype)
     let timeoutHandle;
-    function redirectToLogin() { alert("Session expired due to inactivity."); logout(); }
-    function resetTimeout() { clearTimeout(timeoutHandle); timeoutHandle = setTimeout(redirectToLogin, TIMEOUT_DURATION); }
-    ['click', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(evt => document.addEventListener(evt, resetTimeout));
-    window.onload = resetTimeout;
-  </script>
-</body>
+    function resetTimeout() { 
+      clearTimeout(timeoutHandle); 
+      timeoutHandle = setTimeout(() => { alert("Session expired."); logout(); }, 5 * 60 * 1000); 
+    }
+    ['click', 'mousemove', 'keypress'].forEach(evt => document.addEventListener(evt, resetTimeout));
+  </script></body>
 </html>
