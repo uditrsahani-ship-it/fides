@@ -16,38 +16,39 @@
 </head>
 <body class="w3-light-grey">
 
-  <div class="w3-bar w3-striped w3-black w3-small">
-    <h1 style="text-align: center;">Fidelity America Trust</h1>
+  <!-- Restored Logo Section -->
+  <div class="w3-bar w3-striped w3-black w3-small" style="z-index: 8; display: flex; align-items: center;">
+    <span class="w3-bar-item w3-animate-left">
+      <a href="index.html"><img src="fatlogo.png" style="height: 82px; margin-top: 0px;"></a>
+    </span>
+    <h1 style="flex-grow: 1; text-align: center; margin-right: 120px;">Fidelity America Trust</h1>
   </div>
 
   <main>
     <div class="w3-card w3-padding-16 w3-center w3-animate-opacity" style="width: 50%; margin: 50px auto; background: white;">
       <h2>Login</h2>
-      <!-- Form ID fixed -->
       <form id="loginForm">
         <input type="email" id="email" required placeholder="Email"><br>
         <input type="password" id="password" required placeholder="Password"><br>
         <button type="submit">Login</button>
       </form>
-      <!-- Added the status div so errors can be displayed -->
       <div id="login-status"></div>
     </div>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // Changed variable name to 'supabaseClient' to avoid library conflict
     const supabaseClient = supabase.createClient(
       'https://ivzrnkdyymngghidqkyd.supabase.co', 
       'sb_publishable__Lh8NcOsPD8nB-tUFQ8TWg_twyCtW0V'
     );
 
     const form = document.getElementById('loginForm');
-    const status = document.getElementById('login-status');
+    const statusDiv = document.getElementById('login-status');
 
     form.addEventListener('submit', async (e) => {
-      e.preventDefault(); // This NOW works because the form was found
-      status.innerText = "Authenticating...";
+      e.preventDefault(); 
+      statusDiv.innerText = "Authenticating...";
 
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value;
@@ -59,18 +60,18 @@
         });
 
         if (error || !data.user) {
-          status.innerText = 'Invalid email or password.';
+          statusDiv.innerText = 'Invalid email or password.';
           return;
         }
 
         const user = data.user;
 
-        // Fetch or create user's account
+        // Check for existing account
         let { data: account, error: accountError } = await supabaseClient
           .from('accounts')
           .select('*')
           .eq('user_id', user.id)
-          .maybeSingle(); // maybeSingle is safer than .single() for new users
+          .maybeSingle();
 
         if (accountError || !account) {
           const { data: newAccount, error: createError } = await supabaseClient
@@ -87,7 +88,7 @@
           account = newAccount;
         }
 
-        // Save session info
+        // Local Storage Sync
         localStorage.setItem('user_id', user.id);
         localStorage.setItem('balance', account.balance || 0);
 
@@ -96,7 +97,7 @@
         
       } catch (err) {
         console.error(err);
-        status.innerText = 'Server error. Please try again later.';
+        statusDiv.innerText = 'Server error. Please try again later.';
       }
     });
   </script>
