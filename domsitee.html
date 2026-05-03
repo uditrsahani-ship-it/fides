@@ -90,37 +90,37 @@
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // Initialize Supabase (kept for structure, but bypassed in Prototype Mode)
+    // Initialize Supabase (Kept for architecture, bypassed in Prototype Mode)
     const supabaseClient = supabase.createClient('https://ivzrnkdyymngghidqkyd.supabase.co', 'sb_publishable__Lh8NcOsPD8nB-tUFQ8TWg_twyCtW0V');
 
     async function loadDashboard() {
-      // 1. Check if we are in Prototype Mode
+      // 1. Check for Prototype Flag
       const isPrototype = localStorage.getItem('is_prototype') === 'true';
       const userEmail = localStorage.getItem('user_email');
 
       if (isPrototype) {
-        // --- PROTOTYPE MODE LOGIC ---
-        console.log("Running in Prototype Mode for:", userEmail);
+        console.log("Prototype Mode Active: Chase Matthew M");
         
-        document.getElementById('profile-name').innerText = "Matthew"; // Hardcoded for demo
-        document.getElementById('profile-pic').src = 'https://www.w3schools.com/w3images/avatar2.png'; // Demo avatar
+        // Set Prototype Identity
+        document.getElementById('profile-name').innerText = "Chase Matthew M";
+        document.getElementById('profile-pic').src = 'chase.jpeg';
 
-        // Hardcode balance between $2,000,200.01 and $2,921,021.12
-        const min = 2000200.01;
-        const max = 2921021.12;
-        const randomBalance = Math.random() * (max - min) + min;
+        // 2. Handle Prototype Balance ($2,000,200.01 to $2,921,021.12)
+        let balance = localStorage.getItem('balance');
+        
+        if (!balance) {
+          const min = 2000200.01;
+          const max = 2921021.12;
+          balance = (Math.random() * (max - min) + min).toFixed(2);
+          localStorage.setItem('balance', balance);
+        }
 
-        // Save to localStorage so it persists during this session
-        const finalBalance = localStorage.getItem('balance') || randomBalance;
-        localStorage.setItem('balance', finalBalance);
-
-        displayBalance(finalBalance);
-        return; // Exit function, don't try to call Supabase
+        displayBalance(balance);
+        return; // Stop here for prototype users
       }
 
-      // --- REAL DATABASE LOGIC (Bypassed in Prototype) ---
+      // --- REAL DATABASE LOGIC (Only runs if not in prototype mode) ---
       const session_token = localStorage.getItem('session_token');
       if (!session_token) { window.location.href = "index.html"; return; }
 
@@ -139,33 +139,42 @@
     }
 
     function displayBalance(amount) {
-      document.getElementById('balance').textContent = '$' + parseFloat(amount).toLocaleString(undefined, { 
-        minimumFractionDigits: 2, 
-        maximumFractionDigits: 2 
-      });
+      const balanceEl = document.getElementById('balance');
+      if (balanceEl) {
+        balanceEl.textContent = '$' + parseFloat(amount).toLocaleString(undefined, { 
+          minimumFractionDigits: 2, 
+          maximumFractionDigits: 2 
+        });
+      }
     }
 
-    // Initialize
+    // Initialize Dashboard
     loadDashboard();
 
-    // Update date-time every second
+    // Live Clock
     setInterval(() => {
       const now = new Date();
-      document.getElementById("date-time").textContent = now.toLocaleString();
+      const dateTimeEl = document.getElementById("date-time");
+      if (dateTimeEl) dateTimeEl.textContent = now.toLocaleString();
     }, 1000);
 
-    // Logout function
+    // Logout Fix
     function logout() {
       localStorage.clear();
       window.location.href = 'index.html';
     }
 
-    // Inactivity timeout (optional for prototype)
-    let timeoutHandle;
-    function resetTimeout() { 
-      clearTimeout(timeoutHandle); 
-      timeoutHandle = setTimeout(() => { alert("Session expired."); logout(); }, 5 * 60 * 1000); 
+    // Simple Inactivity Auto-Logout (5 Minutes)
+    let timeout;
+    function resetTimer() {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        alert("Security Timeout: You have been logged out.");
+        logout();
+      }, 300000);
     }
-    ['click', 'mousemove', 'keypress'].forEach(evt => document.addEventListener(evt, resetTimeout));
-  </script></body>
+    document.onmousemove = resetTimer;
+    document.onkeypress = resetTimer;
+  </script>
+</body>
 </html>
