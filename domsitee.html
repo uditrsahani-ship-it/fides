@@ -67,15 +67,22 @@
       <h5><b><i class="fa fa-dashboard"></i> My Dashboard</b></h5>
     </header>
 
-    <div class="w3-container w3-margin-bottom">
-      <div class="w3-container w3-green w3-padding-32 balance-card">
-        <div class="w3-left"><i class="fa fa-money w3-xxxlarge"></i></div>
-        <div class="w3-center">
-          <h4>Available Balance</h4>
-          <span id="balance" style="font-size: 36px; font-weight: bold;">Loading...</span>
-        </div>
-      </div>
+    <!-- Professional Balance Card with Privacy Toggle -->
+<div class="w3-container w3-margin-bottom">
+  <div class="w3-container w3-green w3-padding-32 balance-card" style="position: relative; border-radius: 8px;">
+    <div class="w3-left"><i class="fa fa-university w3-xxxlarge"></i></div>
+    <div class="w3-center">
+      <h4 style="margin-bottom: 0; opacity: 0.9; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">
+        Available Balance 
+        <i class="fa fa-eye-slash" id="toggleEye" onclick="toggleBalance()" style="cursor: pointer; margin-left: 8px;" title="Toggle Visibility"></i>
+      </h4>
+      <!-- The balance itself -->
+      <span id="balance" style="font-size: 32px; font-weight: bold; display: block;">$0.00</span>
+      <!-- The hidden version (dots) -->
+      <span id="balance-hidden" style="font-size: 32px; font-weight: bold; display: none;">••••••••</span>
     </div>
+  </div>
+</div>
 
     <div class="w3-container">
       <button class="w3-button w3-black w3-margin-bottom" onclick="location.href='send.html'"><i class="fa fa-money"></i> Transfers</button>
@@ -147,6 +154,50 @@
         });
       }
     }
+    // Function to toggle balance visibility
+function toggleBalance() {
+  const balanceEl = document.getElementById('balance');
+  const hiddenEl = document.getElementById('balance-hidden');
+  const eyeIcon = document.getElementById('toggleEye');
+
+  if (balanceEl.style.display === 'none') {
+    // Show balance
+    balanceEl.style.display = 'block';
+    hiddenEl.style.display = 'none';
+    eyeIcon.classList.remove('fa-eye');
+    eyeIcon.classList.add('fa-eye-slash');
+    localStorage.setItem('balance_hidden', 'false');
+  } else {
+    // Hide balance
+    balanceEl.style.display = 'none';
+    hiddenEl.style.display = 'block';
+    eyeIcon.classList.remove('fa-eye-slash');
+    eyeIcon.classList.add('fa-eye');
+    localStorage.setItem('balance_hidden', 'true');
+  }
+}
+
+// Updated displayBalance to respect the current toggle state
+function displayBalance(amount) {
+  const balanceEl = document.getElementById('balance');
+  const hiddenEl = document.getElementById('balance-hidden');
+  const eyeIcon = document.getElementById('toggleEye');
+  
+  const formatted = '$' + parseFloat(amount).toLocaleString(undefined, { 
+    minimumFractionDigits: 2, 
+    maximumFractionDigits: 2 
+  });
+
+  balanceEl.textContent = formatted;
+
+  // If user previously hid the balance, keep it hidden on refresh
+  if (localStorage.getItem('balance_hidden') === 'true') {
+    balanceEl.style.display = 'none';
+    hiddenEl.style.display = 'block';
+    eyeIcon.classList.remove('fa-eye-slash');
+    eyeIcon.classList.add('fa-eye');
+  }
+}
 
     // Initialize Dashboard
     loadDashboard();
