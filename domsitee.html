@@ -10,136 +10,174 @@
   <style>
     html, body, h1, h2, h3, h4, h5 { font-family: "Raleway", sans-serif; }
     body { background-color: #f1f1f1; margin: 0; }
-    .w3-sidebar { width: 300px; position: fixed; top: 0; left: 0; height: 100vh; overflow-y: auto; z-index: 3; }
-    .top-bar { padding: 0 24px; height: 80px; display: flex; align-items: center; justify-content: space-between; background-color: #000; color: #fff; margin-left: 300px; position: sticky; top: 0; z-index: 4; }
-    .top-bar img { height: 50px; }
-    .top-bar h1 { font-size: 28px; flex: 1; text-align: center; margin: 0; }
-    .main-content { margin-left: 300px; padding: 24px; margin-top: 80px; }
-    .balance-card { transition: background-color 0.5s; }
-    .balance-card:hover { background-color: #000 !important; }
-    .profile-section { width: 60px; height: 60px; margin-top: 10px; object-fit: cover; border-radius: 50%; }
-    .footer { text-align: center; padding: 16px; background: #e0e0e0; margin-left: 300px; }
-    .w3-button { transition: background-color 0.3s ease; }
-    .w3-button:hover { background-color: #333 !important; }
-    @media (max-width: 768px) {
-      .w3-sidebar { position: static; width: 100%; height: auto; }
-      .top-bar, .main-content, .footer { margin-left: 0; }
+    
+    /* Desktop Sidebar */
+    .w3-sidebar { width: 300px; z-index: 3; font-weight: bold; }
+    
+    /* Top Bar Logic */
+    .top-bar { 
+      padding: 0 16px; 
+      height: 75px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; 
+      background-color: #000; 
+      color: #fff; 
+      position: sticky; 
+      top: 0; 
+      z-index: 4; 
+      margin-left: 300px; 
+      transition: margin-left 0.3s;
+    }
+    
+    .top-bar img { height: 45px; }
+    .top-bar h1 { font-size: 18px; flex: 1; text-align: center; margin: 0; font-weight: bold; }
+    
+    /* Main Content & Layout */
+    .main-content { margin-left: 300px; padding: 24px; transition: margin-left 0.3s; }
+    .footer { text-align: center; padding: 16px; background: #e0e0e0; margin-left: 300px; transition: margin-left 0.3s; }
+
+    .profile-section { width: 60px; height: 60px; object-fit: cover; border-radius: 50%; border: 2px solid #4CAF50; margin-top: 5px; }
+    .balance-card { transition: transform 0.3s ease; }
+    .balance-card:hover { transform: scale(1.02); }
+
+    /* MOBILE OVERRIDES (Screens smaller than 992px) */
+    @media (max-width: 992px) {
+      .top-bar, .main-content, .footer { margin-left: 0 !important; }
+      .top-bar h1 { font-size: 14px; }
+      .hide-mobile { display: none; }
+      .w3-sidebar { display: none; } /* Hidden by default on mobile */
     }
   </style>
 </head>
 <body class="w3-light-grey">
 
+  <!-- Sidebar Overlay for Mobile -->
+  <div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer" id="myOverlay"></div>
+
+  <!-- Top Bar -->
   <div class="top-bar">
-    <a href="domsitee.html"><img src="fatlogo.png" alt="Fidelity America Trust Logo"></a>
+    <button class="w3-button w3-black w3-hide-large w3-left" onclick="w3_open()"><i class="fa fa-bars"></i></button>
+    <a href="domsitee.html"><img src="fatlogo.png" alt="Logo"></a>
     <h1>FIDELITY AMERICA TRUST</h1>
-    <button class="w3-button w3-small w3-black" onclick="logout()">
-      <i class="fa fa-sign-out"></i> Logout
+    <button class="w3-button w3-small w3-black w3-round" onclick="logout()">
+      <i class="fa fa-sign-out"></i> <span class="hide-mobile">Logout</span>
     </button>
   </div>
 
+  <!-- Sidebar -->
   <nav class="w3-sidebar w3-white w3-collapse w3-animate-left" id="mySidebar">
-    <div class="w3-container w3-row w3-padding">
-      <div class="w3-col s4 w3-center">
-        <img src="" alt="Profile Picture" class="profile-section" id="profile-pic">
-      </div>
-      <div class="w3-col s8">
-        <span>Welcome,<br><strong id="profile-name">User</strong></span>
+    <div class="w3-container w3-padding-16">
+      <div class="w3-row">
+        <div class="w3-col s4">
+          <img src="chase.jpeg" class="profile-section" id="profile-pic">
+        </div>
+        <div class="w3-col s8 w3-padding-small">
+          <span>Welcome,<br><strong id="profile-name">User</strong></span>
+        </div>
       </div>
     </div>
     <div id="date-time" class="w3-container w3-small w3-text-grey w3-padding"></div>
     <hr>
-    <div class="w3-container">
-      <h5>Services</h5>
-    </div>
+    <div class="w3-container"><h5>Services</h5></div>
     <div class="w3-bar-block">
-      <a href="#" class="w3-bar-item w3-button w3-green"><i class="fa fa-users fa-fw"></i> Overview</a>
-      <a href="send.html" class="w3-bar-item w3-button"><i class="fa fa-money fa-fw"></i> Send Money</a>
-      <a href="#" class="w3-bar-item w3-button"><i class="fa fa-laptop fa-fw"></i> Pay Bills</a>
-      <a href="#" class="w3-bar-item w3-button"><i class="fa fa-credit-card fa-fw"></i> Request Credit Card</a>
-      <a href="mailto:fidelityamericatrust@gmail.com" class="w3-bar-item w3-button"><i class="fa fa-balance-scale fa-fw"></i> Dispute Resolution</a>
-      <a href="#" class="w3-bar-item w3-button"><i class="fa fa-history fa-fw"></i> History</a>
-      <a href="#" class="w3-bar-item w3-button"><i class="fa fa-user fa-fw"></i> Profile</a>
+      <a href="#" class="w3-bar-item w3-button w3-padding w3-green"><i class="fa fa-users fa-fw"></i> Overview</a>
+      <a href="send.html" class="w3-bar-item w3-button w3-padding"><i class="fa fa-money fa-fw"></i> Send Money</a>
+      <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-laptop fa-fw"></i> Pay Bills</a>
+      <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-credit-card fa-fw"></i> Request Card</a>
+      <a href="mailto:fidelityamericatrust@gmail.com" class="w3-bar-item w3-button w3-padding"><i class="fa fa-balance-scale fa-fw"></i> Dispute Resolution</a>
+      <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-history fa-fw"></i> History</a>
+      <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-user fa-fw"></i> Profile</a>
+      <a href="javascript:void(0)" onclick="w3_close()" class="w3-bar-item w3-button w3-padding w3-hide-large w3-text-red"><i class="fa fa-remove fa-fw"></i> Close Menu</a>
     </div>
   </nav>
 
+  <!-- Main Content -->
   <div class="main-content">
     <header class="w3-container">
       <h5><b><i class="fa fa-dashboard"></i> My Dashboard</b></h5>
     </header>
 
-    <!-- Professional Balance Card with Privacy Toggle -->
-<div class="w3-container w3-margin-bottom">
-  <div class="w3-container w3-green w3-padding-32 balance-card" style="position: relative; border-radius: 8px;">
-    <div class="w3-left"><i class="fa fa-university w3-xxxlarge"></i></div>
-    <div class="w3-center">
-      <h4 style="margin-bottom: 0; opacity: 0.9; font-size: 14px; text-transform: uppercase; letter-spacing: 1px;">
-        Available Balance 
-        <i class="fa fa-eye-slash" id="toggleEye" onclick="toggleBalance()" style="cursor: pointer; margin-left: 8px;" title="Toggle Visibility"></i>
-      </h4>
-      <!-- The balance itself -->
-      <span id="balance" style="font-size: 32px; font-weight: bold; display: block;">$0.00</span>
-      <!-- The hidden version (dots) -->
-      <span id="balance-hidden" style="font-size: 32px; font-weight: bold; display: none;">••••••••</span>
+    <!-- Professional Balance Card -->
+    <div class="w3-container w3-margin-bottom">
+      <div class="w3-container w3-green w3-padding-32 balance-card" style="position: relative; border-radius: 12px;">
+        <div class="w3-left"><i class="fa fa-university w3-xxxlarge"></i></div>
+        <div class="w3-center">
+          <h4 style="margin-bottom: 0; opacity: 0.9; font-size: 13px; text-transform: uppercase; letter-spacing: 1px;">
+            Available Balance 
+            <i class="fa fa-eye-slash" id="toggleEye" onclick="toggleBalance()" style="cursor: pointer; margin-left: 8px;" title="Toggle Visibility"></i>
+          </h4>
+          <span id="balance" style="font-size: 32px; font-weight: bold; display: block;">$0.00</span>
+          <span id="balance-hidden" style="font-size: 32px; font-weight: bold; display: none;">••••••••</span>
+        </div>
+      </div>
     </div>
-  </div>
-</div>
 
+    <!-- Quick Action Buttons -->
     <div class="w3-container">
-      <button class="w3-button w3-black w3-margin-bottom" onclick="location.href='send.html'"><i class="fa fa-money"></i> Transfers</button>
-      <button class="w3-button w3-black w3-margin-bottom" onclick="location.href='https://www.kayak.com/flights'"><i class="fa fa-plane"></i> Book a Flight</button>
-      <button class="w3-button w3-black w3-margin-bottom" onclick="location.href='https://www.booking.com/'"><i class="fa fa-hotel"></i> Hotel Reservation</button>
-      <button class="w3-button w3-black w3-margin-bottom" onclick="location.href='https://bitcoin.org/en/'"><i class="fa fa-bitcoin"></i> Buy Bitcoin</button>
+      <div class="w3-row-padding" style="margin:0 -16px">
+        <div class="w3-half w3-margin-bottom">
+          <button class="w3-button w3-block w3-black w3-padding-large" onclick="location.href='send.html'"><i class="fa fa-money"></i> Transfers</button>
+        </div>
+        <div class="w3-half w3-margin-bottom">
+          <button class="w3-button w3-block w3-black w3-padding-large" onclick="location.href='https://www.kayak.com/flights'"><i class="fa fa-plane"></i> Book a Flight</button>
+        </div>
+        <div class="w3-half w3-margin-bottom">
+          <button class="w3-button w3-block w3-black w3-padding-large" onclick="location.href='https://www.booking.com/'"><i class="fa fa-hotel"></i> Hotel Reservation</button>
+        </div>
+        <div class="w3-half w3-margin-bottom">
+          <button class="w3-button w3-block w3-black w3-padding-large" onclick="location.href='https://bitcoin.org/en/'"><i class="fa fa-bitcoin"></i> Buy Bitcoin</button>
+        </div>
+      </div>
     </div>
   </div>
 
   <footer class="footer">
-    <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">LiisH</a></p>
+    <p>Powered by <a href="#">LiisH</a></p>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // Initialize Supabase (Kept for architecture, bypassed in Prototype Mode)
     const supabaseClient = supabase.createClient('https://ivzrnkdyymngghidqkyd.supabase.co', 'sb_publishable__Lh8NcOsPD8nB-tUFQ8TWg_twyCtW0V');
 
+    // Mobile Sidebar Logic
+    var mySidebar = document.getElementById("mySidebar");
+    var overlayBg = document.getElementById("myOverlay");
+
+    function w3_open() {
+      if (mySidebar.style.display === 'block') { w3_close(); } 
+      else { mySidebar.style.display = 'block'; overlayBg.style.display = "block"; }
+    }
+    function w3_close() { mySidebar.style.display = "none"; overlayBg.style.display = "none"; }
+
+    // Dashboard Data Loading
     async function loadDashboard() {
-      // 1. Check for Prototype Flag
       const isPrototype = localStorage.getItem('is_prototype') === 'true';
-      const userEmail = localStorage.getItem('user_email');
 
       if (isPrototype) {
-        console.log("Prototype Mode Active: Chase Matthew M");
-        
-        // Set Prototype Identity
         document.getElementById('profile-name').innerText = "Chase Matthew M";
         document.getElementById('profile-pic').src = 'chase.jpeg';
-
-        // 2. Handle Prototype Balance ($2,000,200.01 to $2,921,021.12)
-        let balance = localStorage.getItem('balance');
         
+        let balance = localStorage.getItem('balance');
         if (!balance) {
-          const min = 2000200.01;
-          const max = 2921021.12;
+          const min = 2000200.01; const max = 2921021.12;
           balance = (Math.random() * (max - min) + min).toFixed(2);
           localStorage.setItem('balance', balance);
         }
-
         displayBalance(balance);
-        return; // Stop here for prototype users
+        return;
       }
 
-      // --- REAL DATABASE LOGIC (Only runs if not in prototype mode) ---
+      // Supabase Fetch
       const session_token = localStorage.getItem('session_token');
       if (!session_token) { window.location.href = "index.html"; return; }
-
       const { data: session } = await supabaseClient.from('sessions').select('*').eq('session_token', session_token).single();
-      
       if (session) {
         const { data: user } = await supabaseClient.from('users').select('*').eq('id', session.user_id).single();
         if (user) {
           document.getElementById('profile-name').innerText = user.first_name || "User";
           document.getElementById('profile-pic').src = user.profile_pic || 'default.jpg';
         }
-
         const { data: account } = await supabaseClient.from('accounts').select('balance').eq('user_id', session.user_id).single();
         displayBalance(account?.balance || 0);
       }
@@ -147,85 +185,49 @@
 
     function displayBalance(amount) {
       const balanceEl = document.getElementById('balance');
-      if (balanceEl) {
-        balanceEl.textContent = '$' + parseFloat(amount).toLocaleString(undefined, { 
-          minimumFractionDigits: 2, 
-          maximumFractionDigits: 2 
-        });
+      const hiddenEl = document.getElementById('balance-hidden');
+      const eyeIcon = document.getElementById('toggleEye');
+      
+      const formatted = '$' + parseFloat(amount).toLocaleString(undefined, { 
+        minimumFractionDigits: 2, maximumFractionDigits: 2 
+      });
+      balanceEl.textContent = formatted;
+
+      if (localStorage.getItem('balance_hidden') === 'true') {
+        balanceEl.style.display = 'none'; hiddenEl.style.display = 'block';
+        eyeIcon.classList.replace('fa-eye-slash', 'fa-eye');
       }
     }
-    // Function to toggle balance visibility
-function toggleBalance() {
-  const balanceEl = document.getElementById('balance');
-  const hiddenEl = document.getElementById('balance-hidden');
-  const eyeIcon = document.getElementById('toggleEye');
 
-  if (balanceEl.style.display === 'none') {
-    // Show balance
-    balanceEl.style.display = 'block';
-    hiddenEl.style.display = 'none';
-    eyeIcon.classList.remove('fa-eye');
-    eyeIcon.classList.add('fa-eye-slash');
-    localStorage.setItem('balance_hidden', 'false');
-  } else {
-    // Hide balance
-    balanceEl.style.display = 'none';
-    hiddenEl.style.display = 'block';
-    eyeIcon.classList.remove('fa-eye-slash');
-    eyeIcon.classList.add('fa-eye');
-    localStorage.setItem('balance_hidden', 'true');
-  }
-}
+    function toggleBalance() {
+      const b = document.getElementById('balance');
+      const bh = document.getElementById('balance-hidden');
+      const eye = document.getElementById('toggleEye');
 
-// Updated displayBalance to respect the current toggle state
-function displayBalance(amount) {
-  const balanceEl = document.getElementById('balance');
-  const hiddenEl = document.getElementById('balance-hidden');
-  const eyeIcon = document.getElementById('toggleEye');
-  
-  const formatted = '$' + parseFloat(amount).toLocaleString(undefined, { 
-    minimumFractionDigits: 2, 
-    maximumFractionDigits: 2 
-  });
-
-  balanceEl.textContent = formatted;
-
-  // If user previously hid the balance, keep it hidden on refresh
-  if (localStorage.getItem('balance_hidden') === 'true') {
-    balanceEl.style.display = 'none';
-    hiddenEl.style.display = 'block';
-    eyeIcon.classList.remove('fa-eye-slash');
-    eyeIcon.classList.add('fa-eye');
-  }
-}
-
-    // Initialize Dashboard
-    loadDashboard();
-
-    // Live Clock
-    setInterval(() => {
-      const now = new Date();
-      const dateTimeEl = document.getElementById("date-time");
-      if (dateTimeEl) dateTimeEl.textContent = now.toLocaleString();
-    }, 1000);
-
-    // Logout Fix
-    function logout() {
-      localStorage.clear();
-      window.location.href = 'index.html';
+      if (b.style.display === 'none') {
+        b.style.display = 'block'; bh.style.display = 'none';
+        eye.classList.replace('fa-eye', 'fa-eye-slash');
+        localStorage.setItem('balance_hidden', 'false');
+      } else {
+        b.style.display = 'none'; bh.style.display = 'block';
+        eye.classList.replace('fa-eye-slash', 'fa-eye');
+        localStorage.setItem('balance_hidden', 'true');
+      }
     }
 
-    // Simple Inactivity Auto-Logout (5 Minutes)
+    // Initialize
+    loadDashboard();
+    setInterval(() => { document.getElementById("date-time").textContent = new Date().toLocaleString(); }, 1000);
+
+    function logout() { localStorage.clear(); window.location.href = 'index.html'; }
+
+    // Auto-Logout Timer (5 Mins)
     let timeout;
     function resetTimer() {
       clearTimeout(timeout);
-      timeout = setTimeout(() => {
-        alert("Security Timeout: You have been logged out.");
-        logout();
-      }, 300000);
+      timeout = setTimeout(() => { logout(); }, 300000);
     }
-    document.onmousemove = resetTimer;
-    document.onkeypress = resetTimer;
+    document.onmousemove = resetTimer; document.onkeypress = resetTimer;
   </script>
 </body>
 </html>
