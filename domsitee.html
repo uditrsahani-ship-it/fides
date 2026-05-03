@@ -131,6 +131,13 @@
       </div>
     </div>
   </div>
+  <!-- NEW: Transaction History Section -->
+    <div class="w3-container">
+      <h5><b>Recent Transactions</b></h5>
+      <ul class="w3-ul w3-card-4 w3-white" id="transaction-list" style="border-radius: 8px; overflow: hidden;">
+        <!-- Transactions will be injected here by JavaScript -->
+      </ul>
+    </div>
 
   <footer class="footer">
     <p>Powered by <a href="#">LiisH</a></p>
@@ -228,6 +235,39 @@
       timeout = setTimeout(() => { logout(); }, 300000);
     }
     document.onmousemove = resetTimer; document.onkeypress = resetTimer;
+    function loadTransactions() {
+      const list = document.getElementById('transaction-list');
+      
+      // 1. Static "Seed" Data (Random history)
+      const seedData = [
+        { desc: "Amazon.com Marketplace", date: "May 01, 2026", amt: "-$42.50", color: "w3-text-red" },
+        { desc: "Starbucks Coffee", date: "May 01, 2026", amt: "-$12.00", color: "w3-text-red" },
+        { desc: "Zelle Transfer - Received", date: "Apr 28, 2026", amt: "+$500.00", color: "w3-text-green" },
+        { desc: "Apple Services", date: "Apr 25, 2026", amt: "-$9.99", color: "w3-text-red" }
+      ];
+
+      // 2. Get "User-Made" Transactions from LocalStorage
+      const userTransactions = JSON.parse(localStorage.getItem('recent_trans')) || [];
+
+      // Combine them: New ones first, then seed data
+      const allTransactions = [...userTransactions, ...seedData];
+
+      if (allTransactions.length === 0) {
+        list.innerHTML = '<li class="w3-padding-16 w3-center">No recent activity</li>';
+        return;
+      }
+
+      list.innerHTML = allTransactions.map(t => `
+        <li class="w3-padding-16">
+          <span class="w3-right w3-large ${t.color || 'w3-text-red'}"><b>${t.amt}</b></span>
+          <span class="w3-large">${t.desc}</span><br>
+          <span class="w3-text-grey w3-small">${t.date}</span>
+        </li>
+      `).join('');
+    }
+
+    // Call this inside your existing loadDashboard() function
+    loadTransactions();
   </script>
 </body>
 </html>
